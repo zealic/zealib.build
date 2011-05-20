@@ -1,0 +1,38 @@
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<!--
+<code>
+  <owner name="Zealib" email="Zealib@gmail.com"/>
+  <version>1.0</version>
+  <timestamp>20110520</timestamp>
+</code>
+-->
+  <PropertyGroup>
+    <ZealibBuildPath Condition="'$(ZealibBuildPath)' == ''">$(MSBuildExtensionsPath)\Zealib.Build</ZealibBuildPath>
+  </PropertyGroup>
+  
+  <Import Project="$(ZealibBuildPath)\Zealib.Build.Common.tasks" />
+  <Import Project="$(ZealibBuildPath)\Zealib.Build.Extensions.tasks" />
+  
+  <PropertyGroup>
+    <BuildDir>$(MSBuildProjectDirectory)</BuildDir>
+    <BuildToolsDir>$(BuildDir)\tools\</BuildToolsDir>
+    <BaseDir>$([System.IO.Path]::GetFullPath($(MSBuildProjectDirectory)\..))</BaseDir>
+    <SrcDir>$(BaseDir)\src</SrcDir>
+    <DocDir>$(BaseDir)\doc</DocDir>
+    <TargetDir>$(BaseDir)\target</TargetDir>
+  </PropertyGroup>
+  
+  <PropertyGroup>
+    <BuildDependsOn>
+      BeforeBuild;
+      CoreBuild;
+      AfterBuild
+    </BuildDependsOn>
+  </PropertyGroup>
+  <Target
+    Name="Build"
+    DependsOnTargets="$(BuildDependsOn)" />
+  
+  <Target Name="BeforeBuild" />
+  <Target Name="AfterBuild" />
+</Project>

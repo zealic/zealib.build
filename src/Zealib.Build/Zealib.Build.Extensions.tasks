@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+<code>
+  <owner name="Zealib" email="Zealib@gmail.com"/>
+  <version>1.0</version>
+  <timestamp>20110520</timestamp>
+</code>
+-->
+<Project ToolsVersion="4.0" InitialTargets="_RegisterReferencesPath" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ZealibBuildPath Condition="'$(ZealibBuildPath)' == ''">$(MSBuildExtensionsPath)\Zealib.Build</ZealibBuildPath>
+    <ZealibBuild-ExtensionsPath Condition="'$(ZealibBuild-ExtensionsPath)' == ''">$(ZealibBuildPath)\Extensions</ZealibBuild-ExtensionsPath>
+    <ZealibBuild-ReferencesPath Condition="'$(ZealibBuild-ReferencesPath)' == ''">$(ZealibBuild-ExtensionsPath)\References</ZealibBuild-ReferencesPath>
+  </PropertyGroup>
+  
+  <PropertyGroup>
+    <MSBuildTasks-Assembly Condition="'$(MSBuildTasks-Assembly)' == ''">$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll</MSBuildTasks-Assembly>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <ZealibBuild-ReferenceLibs Include="$(ZealibBuild-ReferencesPath)\*.dll"/>
+  </ItemGroup>
+  
+  <PropertyGroup>
+    <MSBuildCommunityTasksPath>$(ZealibBuild-ExtensionsPath)\MSBuild.Community.Tasks\</MSBuildCommunityTasksPath>
+    <ExtensionTasksPath>$(ZealibBuild-ExtensionsPath)\MSBuild.ExtensionPack\</ExtensionTasksPath>
+  </PropertyGroup>
+  
+  <Import Project="$(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.Targets"/>
+  <Import Project="$(ExtensionTasksPath)\MSBuild.ExtensionPack.tasks" />
+  
+  <Target Name="_RegisterReferencesPath">
+    <RegisterAssemblyResolvePath BinPath="$(ZealibBuild-ReferencesPath)" />
+  </Target>
+  
+  <UsingTask
+      TaskName="RegisterAssemblyResolvePath"
+      TaskFactory="CodeTaskFactory"
+      AssemblyFile="$(MSBuildTasks-Assembly)" >
+    <ParameterGroup>
+      <BinPath ParameterType="System.String" Required="True" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System" />
+      <Using Namespace="System.IO" />
+      <Using Namespace="System.Reflection" />
+      <Code Type="Method" Language="cs">
+      <![CDATA[
+public override bool Execute() {
+  AppDomain.CurrentDomain.AssemblyResolve += ResolveAssembly;
+  return true;
+}
+
+private Assembly ResolveAssembly(object sender, ResolveEventArgs e)
+{
+  foreach(string file in Directory.EnumerateFiles(BinPath, "*.dll")) {
+    var name = AssemblyName.GetAssemblyName(file);
+    if(name.FullName == e.Name)
+      return Assembly.LoadFrom(file);
+  }
+  return null;
+}
+      ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+  
+  <UsingTask
+      TaskName="GetFileVersion"
+      TaskFactory="CodeTaskFactory"
+      AssemblyFile="$(MSBuildTasks-Assembly)" >
+    <ParameterGroup>
+      <TargetFile ParameterType="System.String" Required="True" />
+      <Version ParameterType="System.String" Output="True" />
+      <VersionMajor ParameterType="System.Int32" Output="True" />
+      <VersionMinor ParameterType="System.Int32" Output="True" />
+      <VersionBuild ParameterType="System.Int32" Output="True" />
+      <VersionRevision ParameterType="System.Int32" Output="True" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System" />
+      <Using Namespace="System.Diagnostics" />
+      <Code Type="Fragment" Language="cs">
+      <![CDATA[
+var vi = FileVersionInfo.GetVersionInfo(TargetFile);
+VersionMajor = vi.FileMajorPart;
+VersionMinor = vi.FileMinorPart;
+VersionBuild = vi.FileBuildPart;
+VersionRevision= vi.FilePrivatePart;
+Version = string.Format("{0}.{1}.{2}.{3}", 
+  vi.FileMajorPart, vi.FileMinorPart, 
+  vi.FileBuildPart, vi.FilePrivatePart);
+      ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+  
+  <UsingTask
+      TaskName="SetFileVersion"
+      TaskFactory="CodeTaskFactory"
+      AssemblyFile="$(MSBuildTasks-Assembly)" >
+    <ParameterGroup>
+      <TargetFile ParameterType="System.String" Required="True" />
+      <Version ParameterType="Microsoft.Build.Framework.ITaskItem" Required="True" />
+    </ParameterGroup>
+    <Task>
+      <Reference Include="@(ZealibBuild-ReferenceLibs)" />
+      <Using Namespace="System" />
+      <Using Namespace="System.Collections" />
+      <Using Namespace="Vestris.ResourceLib" />
+      <Code Type="Fragment" Language="cs">
+      <![CDATA[
+VersionResource versionResource = new VersionResource();
+versionResource.LoadFrom(TargetFile);
+StringFileInfo stringInfo = (StringFileInfo)versionResource["StringFileInfo"];
+var versionString = Version.ItemSpec;
+foreach(DictionaryEntry entry in Version.CloneCustomMetadata()) {
+  var name = (string)entry.Key;
+  var value = (string)entry.Value;
+  Log.LogMessage("{0}={1}", name , value);
+  if(string.IsNullOrEmpty(value)) continue;
+  stringInfo[name] = value + "\0";
+}
+versionResource.FileVersion = versionString;
+versionResource.ProductVersion = versionString;
+stringInfo["FileVersion"] = versionString + "\0";
+stringInfo["ProductVersion"] = versionString + "\0";
+versionResource.SaveTo(TargetFile);
+      ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+  
+  <UsingTask
+      TaskName="EmbedManifest"
+      TaskFactory="CodeTaskFactory"
+      AssemblyFile="$(MSBuildTasks-Assembly)" >
+    <ParameterGroup>
+      <TargetFile ParameterType="System.String" Required="True" />
+      <ManifestFile ParameterType="System.String" Required="True" />
+    </ParameterGroup>
+    <Task>
+      <Reference Include="System.Xml" />
+      <Reference Include="@(ZealibBuild-ReferenceLibs)" />
+      <Using Namespace="System" />
+      <Using Namespace="System.IO" />
+      <Using Namespace="System.Xml" />
+      <Using Namespace="Vestris.ResourceLib" />
+      <Code Type="Fragment" Language="cs">
+      <![CDATA[
+if(!File.Exists(ManifestFile)) {
+  Log.LogError("Manifest file \"{0}\" not exists.", ManifestFile);
+  return false;
+}
+var doc = new XmlDocument();
+doc.Load(ManifestFile);
+var manifestResource= new ManifestResource();
+manifestResource.Manifest = doc;
+manifestResource.SaveTo(TargetFile);
+      ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+</Project>
