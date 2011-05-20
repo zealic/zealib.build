@@ -18,7 +18,7 @@
     <VersionIdentity Condition="'$(VersionIdentity)' == ''"></VersionIdentity>
     <ReleaseName Condition="'$(ReleaseName)' == ''">DEV</ReleaseName>
     <FullVersion>$(ReleaseName).$(VersionRevision).0</FullVersion>
-    <FullVersion Condition="'$(ReleaseName)' == 'DEV'">$(ReleaseName)-$(VersionRevision)</FullVersion>
+    <FullVersion Condition="'$(ReleaseName)' == 'DEV'">$(ReleaseName)-$(VersionRevision)-$(VersionIdentity)</FullVersion>
     <ArchiveFile>$(TargetDir)\$(ProjectName)-$(FullVersion).zip</ArchiveFile>
   </PropertyGroup>
   
