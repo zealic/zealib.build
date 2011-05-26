@@ -2,8 +2,7 @@
 <!--
 <code>
   <owner name="Zealib" email="Zealib@gmail.com"/>
-  <version>1.0</version>
-  <timestamp>20110517</timestamp>
+  <timestamp>20110526</timestamp>
 </code>
 -->
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
@@ -26,7 +25,6 @@
 			if(LineSize == 0 || LineSize < 10) LineSize = 64;
 			int BUFF_SIZE = 3;
 			var buffer = new byte[BUFF_SIZE];
-			Log.LogMessage("{0}", LineSize);
 			
 			using(var inStream = File.OpenRead(InputFile))
 			using(var outStream = File.CreateText(OutputFile)) {
