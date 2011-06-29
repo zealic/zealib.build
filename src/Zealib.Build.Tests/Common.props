@@ -1,14 +1,20 @@
 <?xml version="1.0" ?>
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project InitialTargets="_CleanTargetDir" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ZealibBuildPath Condition="'$(ZealibBuildPath)' == ''">$(MSBuildProjectDirectory)\..\..\Zealib.Build</ZealibBuildPath>
   </PropertyGroup>
   
   <Import Project="$(ZealibBuildPath)\Zealib.Build.targets" />
   
+  <Target Name="_CleanTargetDir">
+    <RemoveDir Directories="$(TargetDir)" />
+  </Target>
+  
   <PropertyGroup>
     <TargetBinPath>$(TargetDir)\bin\</TargetBinPath>
+    <HelloWorldProjectFile>$(SrcDir)\HelloWorld.csproj</HelloWorldProjectFile>
     <HelloWorldAssemblyFile>$(TargetBinPath)\HelloWorld.dll</HelloWorldAssemblyFile>
+    <HelloTaskProjectFile>$(SrcDir)\HelloTask.csproj</HelloTaskProjectFile>
     <HelloTaskAssemblyFile>$(TargetBinPath)\HelloTask.dll</HelloTaskAssemblyFile>
   </PropertyGroup>
   

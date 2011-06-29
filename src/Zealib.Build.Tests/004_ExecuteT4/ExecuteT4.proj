@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<Project ToolsVersion="4.0" DefaultTargets="ExecuteT4" InitialTargets="_CleanDummy"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildProjectDirectory)\..\Common.props" />
+  
+  <PropertyGroup>
+    <ProjectHookBeforeFile>$(BuildDir)\ProjectHook.Before.xml</ProjectHookBeforeFile>
+    <ProjectHookAfterFile>$(BuildDir)\ProjectHook.After.xml</ProjectHookAfterFile>
+    <DummyTemplateFile>$(BuildDir)\Dummy.tt</DummyTemplateFile>
+    <DummySourceFile>$(BuildDir)\Dummy.cs</DummySourceFile>
+  </PropertyGroup>
+  
+  <Target Name="ExecuteT4">
+    <ItemGroup>
+      <ProjectToBuild Include="$(HelloWorldProjectFile)">
+        <Properties>
+          OutDir=$(TargetBinPath);
+          CustomBeforeMicrosoftCommonTargets=$(ProjectHookBeforeFile);
+          CustomAfterMicrosoftCommonTargets=$(ProjectHookAfterFile);
+          DummyTemplateFile=$(DummyTemplateFile);
+          DummySourceFile=$(DummySourceFile);
+          TransformOnBuild=true;
+          T4-TargetsFile=$(T4-TargetsFile)
+        </Properties>
+      </ProjectToBuild>
+    </ItemGroup>
+    
+    <MSBuild Projects="@(ProjectToBuild)" />
+    
+    <Message Text="ExecuteT4 successful." />
+  </Target>
+  
+  <Target Name="_CleanDummy">
+    <Delete Files="$(DummySourceFile)" />
+  </Target>
+</Project>

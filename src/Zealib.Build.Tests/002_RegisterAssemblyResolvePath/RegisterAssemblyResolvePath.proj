@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
-<Project ToolsVersion="4.0" DefaultTargets="RegisterAssemblyResolvePath" InitialTargets="GenerateHelloWorldProject"
+<Project ToolsVersion="4.0" DefaultTargets="RegisterAssemblyResolvePath"
     xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildProjectDirectory)\..\Common.props" />
   
-  <Target Name="RegisterAssemblyResolvePath">
+  <Target Name="RegisterAssemblyResolvePath" DependsOnTargets="GenerateHelloWorldProject">
     <RegisterAssemblyResolvePath BinPath="$(TargetBinPath)" />
     <SayHello />
     <Message Text="RegisterAssemblyResolvePath successful." />

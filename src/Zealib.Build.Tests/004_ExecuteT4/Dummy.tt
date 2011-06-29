@@ -1,0 +1,7 @@
+﻿<#@ template debug="false" language="C#" #>
+<#@ output extension=".cs" #>
+public static class Dummy {
+  public static void Run() {
+    System.Console.WriteLine("I am Dummy!!!");
+  }
+}
