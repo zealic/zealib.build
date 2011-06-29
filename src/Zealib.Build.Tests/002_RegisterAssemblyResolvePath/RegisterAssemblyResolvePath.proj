@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<Project ToolsVersion="4.0" DefaultTargets="RegisterAssemblyResolvePath" InitialTargets="GenerateHelloWorldProject"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildProjectDirectory)\..\Common.props" />
+  
+  <Target Name="RegisterAssemblyResolvePath">
+    <RegisterAssemblyResolvePath BinPath="$(TargetBinPath)" />
+    <SayHello />
+    <Message Text="RegisterAssemblyResolvePath successful." />
+  </Target>
+  
+  <UsingTask
+      TaskName="SayHello"
+      TaskFactory="CodeTaskFactory"
+      AssemblyFile="$(MSBuildTasks-Assembly)" >
+    <Task>
+      <Reference Include="$(HelloWorldAssemblyFile)" />
+      <Using Namespace="System" />
+      <Using Namespace="System.IO" />
+      <Code Type="Method" Language="cs">
+      <![CDATA[
+public override bool Execute() {
+  HelloWorld.Say();
+  return true;
+}]]>
+      </Code>
+    </Task>
+  </UsingTask>
+</Project>

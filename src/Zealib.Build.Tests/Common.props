@@ -5,4 +5,20 @@
   </PropertyGroup>
   
   <Import Project="$(ZealibBuildPath)\Zealib.Build.targets" />
+  
+  <PropertyGroup>
+    <TargetBinPath>$(TargetDir)\bin\</TargetBinPath>
+    <HelloWorldAssemblyFile>$(TargetBinPath)\HelloWorld.dll</HelloWorldAssemblyFile>
+    <HelloTaskAssemblyFile>$(TargetBinPath)\HelloTask.dll</HelloTaskAssemblyFile>
+  </PropertyGroup>
+  
+  <Target Name="GenerateHelloWorldProject">
+    <MSBuild Projects="$(SrcDir)\HelloWorld.csproj"
+      Properties="OutputPath=$(TargetBinPath)" />
+  </Target>
+  
+  <Target Name="GenerateHelloTaskProject">
+    <MSBuild Projects="$(SrcDir)\HelloTask.csproj"
+      Properties="OutputPath=$(TargetBinPath)" />
+  </Target>
 </Project>
