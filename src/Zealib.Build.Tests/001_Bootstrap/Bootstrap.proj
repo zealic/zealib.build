@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<Project ToolsVersion="4.0" DefaultTargets="Bootstrap" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildProjectDirectory)\..\Common.props" />
+    
+  <Target Name="Bootstrap">
+    <Message Text="Bootstrap successful." />
+  </Target>
+</Project>
