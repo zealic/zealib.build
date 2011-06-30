@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<Project ToolsVersion="4.0" DefaultTargets="ProcessFile-GZip" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildProjectDirectory)\..\Common.props" />
+  
+  <PropertyGroup>
+    <DataFile>$(BuildDir)\Data.txt</DataFile>
+    <ActualOutputFile>$(TargetDir)\ActualResult.gz</ActualOutputFile>
+    <ActualResultFile>$(TargetDir)\ActualResult.txt</ActualResultFile>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <ProcessPipelines Include="GZip" />
+  </ItemGroup>
+  
+  <Target Name="ProcessFile-GZip">
+    <ProcessFile InputFile="$(DataFile)" OutputFile="$(ActualOutputFile)" Pipelines="@(ProcessPipelines)" />
+    
+    <!-- Verify -->
+    <UnGZip InputFile="$(ActualOutputFile)" OutputFile="$(ActualResultFile)" />
+    <File TaskAction="GetChecksum"
+      Path="$(DataFile)">
+      <Output PropertyName="ExpcectedChecksum" TaskParameter="Checksum" />
+    </File>
+    <File TaskAction="GetChecksum"
+      Path="$(ActualResultFile)">
+      <Output PropertyName="ActualChecksum" TaskParameter="Checksum" />
+    </File>
+    
+    <Message Text="ActualChecksum=$(ActualChecksum), ExpcectedChecksum=$(ExpcectedChecksum)" />
+    <Error Condition="'$(ActualChecksum)' != '$(ExpcectedChecksum)'" Code="1" />
+    
+    <Message Text="ProcessFile-GZip successful." />
+  </Target>
+  
+  <UsingTask
+      TaskName="UnGZip"
+      TaskFactory="CodeTaskFactory"
+      AssemblyFile="$(MSBuildTasks-Assembly)" >
+    <ParameterGroup>
+      <InputFile ParameterType="System.String" Required="True" />
+      <OutputFile ParameterType="System.String" Required="True" />
+    </ParameterGroup>
+    <Task>
+      <Code Type="Fragment" Language="cs">
+      <![CDATA[
+using(var inStream = System.IO.File.OpenRead(InputFile))
+using(var outStream = System.IO.File.Create(OutputFile)) {
+  System.IO.Stream currentStream = new System.IO.Compression.GZipStream(inStream,
+    System.IO.Compression.CompressionMode.Decompress);
+
+  int reads = 0;
+  byte[] buffer = new byte[4096];
+  while((reads = currentStream.Read(buffer, 0, 4096)) != 0) {
+    System.Console.WriteLine(reads);
+    outStream.Write(buffer, 0, reads);
+  }
+  outStream.Flush();
+  outStream.Close();
+}
+
+]]>
+      </Code>
+    </Task>
+  </UsingTask>
+</Project>

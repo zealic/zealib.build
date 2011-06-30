@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<Project ToolsVersion="4.0" DefaultTargets="ProcessFile-Xor" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildProjectDirectory)\..\Common.props" />
+  
+  <PropertyGroup>
+    <DataFile>$(BuildDir)\Data.txt</DataFile>
+    <ExpcectedResultFile>$(BuildDir)\ExpcectedResult.txt</ExpcectedResultFile>
+    <ActualResultFile>$(TargetDir)\ActualResult.txt</ActualResultFile>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <ProcessPipelines Include="Xor">
+      <Factors>1,2,3,4,5,6,7</Factors>
+    </ProcessPipelines>
+  </ItemGroup>
+  
+  <Target Name="ProcessFile-Xor">
+    <ProcessFile InputFile="$(DataFile)" OutputFile="$(ActualResultFile)" Pipelines="@(ProcessPipelines)" />
+    
+    <!-- Verify -->
+    <File TaskAction="GetChecksum"
+      Path="$(ExpcectedResultFile)">
+      <Output PropertyName="ExpcectedChecksum" TaskParameter="Checksum" />
+    </File>
+    <File TaskAction="GetChecksum"
+      Path="$(ActualResultFile)">
+      <Output PropertyName="ActualChecksum" TaskParameter="Checksum" />
+    </File>
+    
+    <Message Text="ActualChecksum=$(ActualChecksum), ExpcectedChecksum=$(ExpcectedChecksum)" />
+    <Error Condition="'$(ActualChecksum)' != '$(ExpcectedChecksum)'" Code="1" />
+    
+    <Message Text="ProcessFile-Xor successful." />
+  </Target>
+</Project>

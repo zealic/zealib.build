@@ -1,264 +1,340 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-<code>
-  <owner name="Zealib" email="Zealib@gmail.com"/>
-  <timestamp>20110526</timestamp>
-</code>
--->
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-	<UsingTask
-			TaskName="Base64File"
-			TaskFactory="CodeTaskFactory"
-			AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll" >
-		<ParameterGroup>
-			<InputFile ParameterType="System.String" Required="True" />
-			<OutputFile ParameterType="System.String" Required="True" />
-			<LineSize ParameterType="System.Int32" />
-		</ParameterGroup>
-		<Task>
-			<Using Namespace="System" />
-			<Using Namespace="System.IO" />
-			<Using Namespace="System.Security.Cryptography" />
-			<Using Namespace="System.Text" />
-			<Code Type="Fragment" Language="cs">
-			<![CDATA[
-			if(LineSize == 0 || LineSize < 10) LineSize = 64;
-			int BUFF_SIZE = 3;
-			var buffer = new byte[BUFF_SIZE];
-			
-			using(var inStream = File.OpenRead(InputFile))
-			using(var outStream = File.CreateText(OutputFile)) {
-				int reads = 0, count = 0;
-				int nextBreak = LineSize;
-				var outArray = new char[BUFF_SIZE + 1];
-				while((reads = inStream.Read(buffer, 0, BUFF_SIZE)) != 0) {
-					var num = Convert.ToBase64CharArray(buffer, 0, reads, outArray, 0);
-					if(count + num >= nextBreak) {
-						outStream.Write(outArray, 0, num - (count + num - nextBreak));
-						outStream.Write(Environment.NewLine);
-						outStream.Write(outArray, 0, count + num - nextBreak);
-						nextBreak += LineSize;
-					}
-					else
-						outStream.Write(outArray, 0, num);
-					count += num;
-				}
-				outStream.WriteLine();
-			}
-			]]>
-			</Code>
-		</Task>
-	</UsingTask>
-	
-	<UsingTask
-			TaskName="XorFile"
-			TaskFactory="CodeTaskFactory"
-			AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll" >
-		<ParameterGroup>
-			<InputFile ParameterType="System.String" />
-			<OutputFile ParameterType="System.String" />
-			<Factors ParameterType="System.Byte[]" />
-		</ParameterGroup>
-		<Task>
-			<Using Namespace="System" />
-			<Using Namespace="System.IO" />
-			<Code Type="Fragment" Language="cs">
-			<![CDATA[
-			using(var inStream = File.OpenRead(InputFile))
-			using(var outStream = File.Create(OutputFile)) {
-			  const int BUFF_SIZE = 4096;
-				var reads = 0;
-				var factorIndex = 0;
-				var buffer = new byte[BUFF_SIZE];
-				Log.LogMessage("Factors size is : {0}.", Factors.Length);
-				while((reads = inStream.Read(buffer, 0, BUFF_SIZE)) != 0) {
-					for(var n = 0;n < reads; n++) {
-						buffer[n] = (byte)(buffer[n] ^ Factors[factorIndex % Factors.Length]);
-						factorIndex++;
-					}
-					outStream.Write(buffer, 0, reads);
-				}
-			}
-			]]>
-			</Code>
-		</Task>
-	</UsingTask>
-	
-	<UsingTask
-			TaskName="GZipFile"
-			TaskFactory="CodeTaskFactory"
-			AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll" >
-		<ParameterGroup>
-			<InputFile ParameterType="System.String" />
-			<OutputFile ParameterType="System.String" />
-		</ParameterGroup>
-		<Task>
-			<Using Namespace="System" />
-			<Using Namespace="System.IO" />
-			<Using Namespace="System.IO.Compression" />
-			<Code Type="Fragment" Language="cs">
-			<![CDATA[
-			using(var inStream = File.OpenRead(InputFile))
-			using(var outStream = File.Create(OutputFile))
-			using(var gzipStream = new GZipStream(outStream, CompressionMode.Compress)){
-			  inStream.CopyTo(gzipStream);
-			}
-			]]>
-			</Code>
-		</Task>
-	</UsingTask>
-	
-	<UsingTask
-			TaskName="CleanSolutionFile"
-			TaskFactory="CodeTaskFactory"
-			AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll" >
-		<ParameterGroup>
-			<Files ParameterType="System.String[]" Required="True" />
-			<ProjectNamePatterns ParameterType="System.String[]" />
-			<ItemPatterns ParameterType="System.String[]" />
-		</ParameterGroup>
-		<Task>
-			<Using Namespace="System" />
-			<Using Namespace="System.Collections.Generic" />
-			<Using Namespace="System.Reflection" />
-			<Using Namespace="System.Text" />
-			<Using Namespace="System.Text.RegularExpressions" />
-			<Code Type="Method" Language="cs">
-			<![CDATA[
-private class SolutionInfo {
-	public class ProjectInfo {
-		private const string REGEX_PATTERN = 
-			"^Project\\(" +
-			"\"(?<ProjectType>[^\"]+)\"" + @"\)" + @"\s*=\s*" +
-			"\"(?<ProjectName>[^\"]+)\"" + @"\s*,\s*" +
-			"\"(?<ProjectPath>[^\"]+)\"" + @"\s*,\s*" +
-			"\"(?<ProjectGuid>[^\"]+)\"\\s*$";
-		private readonly static Regex s_Regex = new Regex(REGEX_PATTERN);
-		
-		public ProjectInfo(string info) {
-			var match = s_Regex.Match(info);
-			
-			if(!match.Success) {
-				Console.WriteLine(info);
-				throw new ArgumentException("Invalid project info.", "info");
-			}
-			ProjectType = match.Result("${ProjectType}");
-			ProjectName = match.Result("${ProjectName}");
-			ProjectPath = match.Result("${ProjectPath}");
-			ProjectGuid = match.Result("${ProjectGuid}");
-		}
-		
-		public string ProjectType { get; private set; }
-		public string ProjectName { get; private set; }
-		public string ProjectPath { get; private set; }
-		public string ProjectGuid { get; private set; }
-		public List<string> SolutionItems { get; set; }
-		
-		public override string ToString() {
-			var sb = new StringBuilder();
-			sb.AppendFormat("Project(\"{0}\") = \"{1}\", \"{2}\", \"{3}\"\r\n",
-				ProjectType, ProjectName, ProjectPath, ProjectGuid);
-			if(SolutionItems != null && SolutionItems.Count > 0) {
-				sb.AppendLine("\tProjectSection(SolutionItems) = preProject");
-				foreach(var item in SolutionItems) {
-					sb.AppendLine("\t\t" + item);
-				}
-				sb.AppendLine("\tEndProjectSection");
-			}
-			sb.Append("EndProject");
-			return sb.ToString();
-		}
-		
-	}
+  <PropertyGroup>
+    <ZealibBuildPath Condition="'$(ZealibBuildPath)' == ''">$(MSBuildExtensionsPath)\Zealib.Build</ZealibBuildPath>
+  </PropertyGroup>
+  
+  <UsingTask
+      TaskName="ProcessFile"
+      TaskFactory="CodeTaskFactory"
+      AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll" >
+    <ParameterGroup>
+      <InputFile ParameterType="System.String" Required="True" />
+      <OutputFile ParameterType="System.String" Required="True" />
+      <Pipelines ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="True" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System" />
+      <Using Namespace="System.IO" />
+      <Using Namespace="System.IO.Compression" />
+      <Using Namespace=" System.Reflection" />
+      <Using Namespace="System.Security.Cryptography" />
+      <Using Namespace="System.Text" />
+      <Code Type="Method" Language="cs">
+      <![CDATA[
+public override bool Execute() {
+    Array.Reverse(Pipelines);
+    using(var inStream = File.OpenRead(InputFile))
+    using(var outStream = File.Create(OutputFile)) {
+      Stream currentStream = outStream;
+      foreach (var pipeline in Pipelines) {
+        switch(pipeline.ItemSpec.ToUpper()) {
+          case "BASE64":
+            currentStream = CreateBase64Stream(pipeline, currentStream);
+            break;
+          case "GZIP":
+            currentStream = CreateGZipStream(pipeline, currentStream);
+            break;
+          case "XOR":
+            currentStream = CreateXorStream(pipeline, currentStream);
+            break;
+          default:
+            currentStream = null;
+            break;
+        }
+        if(currentStream == null) {
+          Log.LogError("Not supported pipeline \"{0}\".", pipeline.ItemSpec);
+          return false;
+        }
+      }
+      
+      int reads = 0;
+      byte[] buffer = new byte[4096];
+      while((reads = inStream.Read(buffer, 0, 4096)) != 0)
+        currentStream.Write(buffer, 0, reads);
+      currentStream.Flush();
+      currentStream.Close();
+    }
+    
+    return true;
+}
 
-	private List<object> m_Items = new List<object>();
-	
-	public SolutionInfo(string file) {
-		var lines = File.ReadAllLines(file);
-		
-		ProjectInfo info = null;
-		List<string> solutionItems = null;
-		foreach(var line in lines) {
-			if(line.Trim().StartsWith("Project(")) {
-				info = new ProjectInfo(line);
-			} else if(line.Trim() == "EndProject") {
-				m_Items.Add(info);
-				info = null;
-			} else if(info != null) {
-				if(line.Trim().StartsWith("ProjectSection(")) {
-					solutionItems = new List<string>();
-				}
-				else if(line.Trim() == "EndProjectSection") {
-					info.SolutionItems = solutionItems;
-					solutionItems= null;
-				}
-				else if(solutionItems != null)
-					solutionItems.Add(line.Trim());
-			}
-			else if(info == null) {
-				m_Items.Add(line);
-			}
-		}
-	}
-	
-	public void RemoveProjects(Func<ProjectInfo, bool> condition) {
-		var removeList = new List<object>();
-		foreach(var item in m_Items) {
-			var info = item as ProjectInfo;
-			if(info == null) continue;
-			if(condition(info)) {
-				removeList.Add(info);
-				foreach(var str in m_Items) {
-					var line = str as string;
-					if(line == null) continue;
-					if(line.Contains(info.ProjectGuid)) removeList.Add(line);
-				}
-			}
-		}
-		
-		foreach(var info in removeList) m_Items.Remove(info);
-	}
-		
-	public void RemoveSolutionItems(Func<string, bool> condition) {
-		foreach(var item in m_Items) {
-			var info = item as ProjectInfo;
-			if(info == null || info.SolutionItems == null) continue;
-			var removeList = new List<string>();
-			foreach(var si in info.SolutionItems) {
-				if(condition(si)) removeList.Add(si);
-			}
-			
-			foreach(var si in removeList) info.SolutionItems.Remove(si);
-		}
-	}
-	
-	public override string ToString() {
-		var sb = new StringBuilder();
-		foreach(var o in m_Items) {
-			sb.AppendLine(o.ToString());
-		}
-		return sb.ToString();
-	}
+private Stream CreateBase64Stream(
+    Microsoft.Build.Framework.ITaskItem item,
+    Stream outStream) {
+  return null;
+}
+
+private Stream CreateGZipStream(
+    Microsoft.Build.Framework.ITaskItem item,
+    Stream outStream) {
+  return new GZipStream(outStream, CompressionMode.Compress);
+}
+
+private Stream CreateXorStream(
+    Microsoft.Build.Framework.ITaskItem item,
+    Stream outStream) {
+  string factorsStr = item.GetMetadata("Factors");
+  if(string.IsNullOrEmpty(factorsStr)) {
+    Log.LogError("Metadata value Xor.Factors is required.");
+    return null;
+  }
+  byte[] factors = ParseBytes(factorsStr);
+  if(factors.Length < 1) {
+    Log.LogError("Metadata value Xor.Factors size must greater than 1.");
+    return null;
+  }
+  
+  return new XorStream(outStream, factors);
+}
+
+private static byte[] ParseBytes(string value) {
+  var list = new System.Collections.Generic.List<byte>();
+  foreach(string item in value.Split(',')) {
+    var factor = item;
+    if(factor.StartsWith("0x", StringComparison.OrdinalIgnoreCase)) {
+      factor = factor.Substring(2);
+      list.Add(byte.Parse(factor, System.Globalization.NumberStyles.HexNumber));
+    } else {
+      list.Add(byte.Parse(factor));
+    }
+  }
+  return list.ToArray();
+}
+
+public class XorStream : Stream
+{
+  public XorStream(Stream baseStream, byte[] factors)
+  {
+    BaseStream = baseStream;
+    Factors = new byte[factors.Length];
+    Array.Copy(factors, Factors, factors.Length);
+  }
+
+  public byte[] Factors { get; private set; }
+
+  public Stream BaseStream { get; private set; }
+
+  private void ProcessData(byte[] buffer, int offset, int count)
+  {
+    var factorIndex = (Position + offset) % Factors.Length;
+    for (int i = offset; i < offset + count; i++)
+    {
+      buffer[i] = (byte)(buffer[i] ^ Factors[factorIndex % Factors.Length]);
+      factorIndex++;
+    }
+  }
+
+  public override bool CanRead
+  {
+    get { return BaseStream.CanRead; }
+  }
+
+  public override bool CanSeek
+  {
+    get { return false; }
+  }
+
+  public override bool CanWrite
+  {
+    get { return BaseStream.CanWrite; }
+  }
+
+  public override void Flush()
+  {
+    BaseStream.Flush();
+  }
+
+  public override long Length
+  {
+    get { return BaseStream.Length; }
+  }
+
+  public override long Position
+  {
+    get { return BaseStream.Position; }
+    set { throw new NotSupportedException(); }
+  }
+
+  public override int Read(byte[] buffer, int offset, int count)
+  {
+    var reads = BaseStream.Read(buffer, offset, count);
+    ProcessData(buffer, offset, reads);
+    return reads;
+  }
+
+  public override long Seek(long offset, SeekOrigin origin)
+  {
+    throw new NotSupportedException();
+  }
+
+  public override void SetLength(long value)
+  {
+    throw new NotSupportedException();
+  }
+
+  public override void Write(byte[] buffer, int offset, int count)
+  {
+    ProcessData(buffer, offset, count);
+    BaseStream.Write(buffer, offset, count);
+  }
+}
+      ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+  
+  <UsingTask
+      TaskName="CleanSolutionFile"
+      TaskFactory="CodeTaskFactory"
+      AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll" >
+    <ParameterGroup>
+      <Files ParameterType="System.String[]" Required="True" />
+      <ProjectNamePatterns ParameterType="System.String[]" />
+      <ItemPatterns ParameterType="System.String[]" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System" />
+      <Using Namespace="System.Collections.Generic" />
+      <Using Namespace="System.Reflection" />
+      <Using Namespace="System.Text" />
+      <Using Namespace="System.Text.RegularExpressions" />
+      <Code Type="Method" Language="cs">
+      <![CDATA[
+private class SolutionInfo {
+  public class ProjectInfo {
+    private const string REGEX_PATTERN = 
+      "^Project\\(" +
+      "\"(?<ProjectType>[^\"]+)\"" + @"\)" + @"\s*=\s*" +
+      "\"(?<ProjectName>[^\"]+)\"" + @"\s*,\s*" +
+      "\"(?<ProjectPath>[^\"]+)\"" + @"\s*,\s*" +
+      "\"(?<ProjectGuid>[^\"]+)\"\\s*$";
+    private readonly static Regex s_Regex = new Regex(REGEX_PATTERN);
+    
+    public ProjectInfo(string info) {
+      var match = s_Regex.Match(info);
+      
+      if(!match.Success) {
+        Console.WriteLine(info);
+        throw new ArgumentException("Invalid project info.", "info");
+      }
+      ProjectType = match.Result("${ProjectType}");
+      ProjectName = match.Result("${ProjectName}");
+      ProjectPath = match.Result("${ProjectPath}");
+      ProjectGuid = match.Result("${ProjectGuid}");
+    }
+    
+    public string ProjectType { get; private set; }
+    public string ProjectName { get; private set; }
+    public string ProjectPath { get; private set; }
+    public string ProjectGuid { get; private set; }
+    public List<string> SolutionItems { get; set; }
+    
+    public override string ToString() {
+      var sb = new StringBuilder();
+      sb.AppendFormat("Project(\"{0}\") = \"{1}\", \"{2}\", \"{3}\"\r\n",
+        ProjectType, ProjectName, ProjectPath, ProjectGuid);
+      if(SolutionItems != null && SolutionItems.Count > 0) {
+        sb.AppendLine("\tProjectSection(SolutionItems) = preProject");
+        foreach(var item in SolutionItems) {
+          sb.AppendLine("\t\t" + item);
+        }
+        sb.AppendLine("\tEndProjectSection");
+      }
+      sb.Append("EndProject");
+      return sb.ToString();
+    }
+    
+  }
+
+  private List<object> m_Items = new List<object>();
+  
+  public SolutionInfo(string file) {
+    var lines = File.ReadAllLines(file);
+    
+    ProjectInfo info = null;
+    List<string> solutionItems = null;
+    foreach(var line in lines) {
+      if(line.Trim().StartsWith("Project(")) {
+        info = new ProjectInfo(line);
+      } else if(line.Trim() == "EndProject") {
+        m_Items.Add(info);
+        info = null;
+      } else if(info != null) {
+        if(line.Trim().StartsWith("ProjectSection(")) {
+          solutionItems = new List<string>();
+        }
+        else if(line.Trim() == "EndProjectSection") {
+          info.SolutionItems = solutionItems;
+          solutionItems= null;
+        }
+        else if(solutionItems != null)
+          solutionItems.Add(line.Trim());
+      }
+      else if(info == null) {
+        m_Items.Add(line);
+      }
+    }
+  }
+  
+  public void RemoveProjects(Func<ProjectInfo, bool> condition) {
+    var removeList = new List<object>();
+    foreach(var item in m_Items) {
+      var info = item as ProjectInfo;
+      if(info == null) continue;
+      if(condition(info)) {
+        removeList.Add(info);
+        foreach(var str in m_Items) {
+          var line = str as string;
+          if(line == null) continue;
+          if(line.Contains(info.ProjectGuid)) removeList.Add(line);
+        }
+      }
+    }
+    
+    foreach(var info in removeList) m_Items.Remove(info);
+  }
+    
+  public void RemoveSolutionItems(Func<string, bool> condition) {
+    foreach(var item in m_Items) {
+      var info = item as ProjectInfo;
+      if(info == null || info.SolutionItems == null) continue;
+      var removeList = new List<string>();
+      foreach(var si in info.SolutionItems) {
+        if(condition(si)) removeList.Add(si);
+      }
+      
+      foreach(var si in removeList) info.SolutionItems.Remove(si);
+    }
+  }
+  
+  public override string ToString() {
+    var sb = new StringBuilder();
+    foreach(var o in m_Items) {
+      sb.AppendLine(o.ToString());
+    }
+    return sb.ToString();
+  }
 } // class SloutionInfo
 
 private void RemoveProjectFromSolution(string slnFile) {
-	var sln = new SolutionInfo(slnFile);
-	foreach(var pattern in ProjectNamePatterns)
-		sln.RemoveProjects(p => new Regex(pattern).IsMatch(p.ProjectName));
-	foreach(var pattern in ItemPatterns)
-		sln.RemoveSolutionItems(m => new Regex(pattern).IsMatch(m));
-	File.WriteAllText(slnFile, sln.ToString(), new UTF8Encoding(true, true));
+  var sln = new SolutionInfo(slnFile);
+  foreach(var pattern in ProjectNamePatterns)
+    sln.RemoveProjects(p => new Regex(pattern).IsMatch(p.ProjectName));
+  foreach(var pattern in ItemPatterns)
+    sln.RemoveSolutionItems(m => new Regex(pattern).IsMatch(m));
+  File.WriteAllText(slnFile, sln.ToString(), new UTF8Encoding(true, true));
 }
 
 public override bool Execute() {
-		if(ProjectNamePatterns == null) ProjectNamePatterns = new string[0];
-		if(ItemPatterns == null) ItemPatterns = new string[0];
-		
-		foreach (var file in Files) RemoveProjectFromSolution(file);
-		return true;
+    if(ProjectNamePatterns == null) ProjectNamePatterns = new string[0];
+    if(ItemPatterns == null) ItemPatterns = new string[0];
+    
+    foreach (var file in Files) RemoveProjectFromSolution(file);
+    return true;
 }
 ]]>
-			</Code>
-		</Task>
-	</UsingTask>
+      </Code>
+    </Task>
+  </UsingTask>
 </Project>
