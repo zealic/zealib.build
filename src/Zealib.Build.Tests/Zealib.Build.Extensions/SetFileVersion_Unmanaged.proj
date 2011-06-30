@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<Project ToolsVersion="4.0" DefaultTargets="SetFileVersion_Unmanaged"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildProjectDirectory)\..\Common.props" />
+  
+  <PropertyGroup>
+    <SourceFile>$(WINDIR)\system32\mscoree.dll</SourceFile>
+    <FactAssembly>$(BinDir)\FactAssembly.dll</FactAssembly>
+  </PropertyGroup>
+  
+  <Target Name="MakeAssembly">
+    <Copy SourceFiles="$(SourceFile)" DestinationFiles="$(FactAssembly)" />
+  </Target>
+  
+  <Target Name="SetFileVersion_Unmanaged" DependsOnTargets="MakeAssembly">
+    <SetFileVersion TargetFile="$(FactAssembly)" Version="7.8.9.10" />
+    <GetFileVersion TargetFile="$(FactAssembly)">
+      <Output TaskParameter="Version" PropertyName="ActualVersion" />
+    </GetFileVersion>
+    
+    <!-- Verify -->
+    <Error Condition="'$(ActualVersion)' != '7.8.9.10'" Text="Expected value is '7.8.9.10', but actual value is '$(ActualVersion)'." Code="1" />
+    
+    <Message Text="SetFileVersion_Win32 successful." />
+  </Target>
+</Project>

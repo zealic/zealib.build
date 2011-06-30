@@ -12,7 +12,6 @@
   </ItemGroup>
   
   <Target Name="MakeAssembly">
-    <MakeDir Directories="$(BinDir)" />
     <Csc Sources="@(FactSources)" TargetType="Library" OutputAssembly="$(FactAssembly)" />
   </Target>
   

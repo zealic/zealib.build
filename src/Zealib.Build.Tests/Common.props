@@ -19,6 +19,7 @@
   
   <Target Name="_CleanTargetDir">
     <RemoveDir Directories="$(TargetDir)" />
+    <MakeDir Directories="$(BinDir)" />
   </Target>
   
   <Target Name="GenerateHelloWorldProject">
