@@ -4,7 +4,7 @@
   <Import Project="$(MSBuildProjectDirectory)\..\Common.props" />
   
   <Target Name="RegisterAssemblyResolvePath" DependsOnTargets="GenerateHelloWorldProject">
-    <RegisterAssemblyResolvePath BinPath="$(TargetBinPath)" />
+    <RegisterAssemblyResolvePath BinPath="$(BinDir)" />
     <SayHello />
     <Message Text="RegisterAssemblyResolvePath successful." />
   </Target>
@@ -16,7 +16,6 @@
     <Task>
       <Reference Include="$(HelloWorldAssemblyFile)" />
       <Using Namespace="System" />
-      <Using Namespace="System.IO" />
       <Code Type="Method" Language="cs">
       <![CDATA[
 public override bool Execute() {

@@ -4,7 +4,6 @@
   <Import Project="$(MSBuildProjectDirectory)\..\Common.props" />
   
   <PropertyGroup>
-    <BuildDir>$(BuildDir)\..\</BuildDir>
     <ProjectHookBeforeFile>$(BuildDir)\ProjectHook.Before.xml</ProjectHookBeforeFile>
     <ProjectHookAfterFile>$(BuildDir)\ProjectHook.After.xml</ProjectHookAfterFile>
     <DummyTemplateFile>$(BuildDir)\Dummy.tt</DummyTemplateFile>
@@ -15,7 +14,7 @@
     <ItemGroup>
       <ProjectToBuild Include="$(HelloWorldProjectFile)">
         <Properties>
-          OutDir=$(TargetBinPath);
+          OutDir=$(BinDir);
           CustomBeforeMicrosoftCommonTargets=$(ProjectHookBeforeFile);
           CustomAfterMicrosoftCommonTargets=$(ProjectHookAfterFile);
           DummyTemplateFile=$(DummyTemplateFile);
@@ -28,10 +27,30 @@
     
     <MSBuild Projects="@(ProjectToBuild)" />
     
+    <!-- Verify -->
+    <RegisterAssemblyResolvePath BinPath="$(BinDir)" />
+    <RunDummy />
     <Message Text="ExecuteT4 successful." />
   </Target>
   
   <Target Name="_CleanDummy">
     <Delete Files="$(DummySourceFile)" />
   </Target>
+  
+  <UsingTask
+      TaskName="RunDummy"
+      TaskFactory="CodeTaskFactory"
+      AssemblyFile="$(MSBuildTasks-Assembly)" >
+    <Task>
+      <Reference Include="$(HelloWorldAssemblyFile)" />
+      <Using Namespace="System" />
+      <Code Type="Method" Language="cs">
+      <![CDATA[
+public override bool Execute() {
+  Dummy.Run();
+  return true;
+}]]>
+      </Code>
+    </Task>
+  </UsingTask>
 </Project>

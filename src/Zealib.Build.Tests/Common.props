@@ -8,12 +8,13 @@
   
   <PropertyGroup>
     <TestName>$(MSBuildProjectName)</TestName>
+    <BuildDir>$(BuildDir)\$(TestName)\</BuildDir>
     <TargetDir>$(TargetDir)\$([System.IO.Directory]::GetParent($(MSBuildProjectFullPath)).Name)\$(TestName)\</TargetDir>
-    <TargetBinPath>$(TargetDir)\bin\</TargetBinPath>
+    <BinDir>$(TargetDir)\bin\</BinDir>
     <HelloWorldProjectFile>$(SrcDir)\HelloWorld.csproj</HelloWorldProjectFile>
-    <HelloWorldAssemblyFile>$(TargetBinPath)\HelloWorld.dll</HelloWorldAssemblyFile>
+    <HelloWorldAssemblyFile>$(BinDir)\HelloWorld.dll</HelloWorldAssemblyFile>
     <HelloTaskProjectFile>$(SrcDir)\HelloTask.csproj</HelloTaskProjectFile>
-    <HelloTaskAssemblyFile>$(TargetBinPath)\HelloTask.dll</HelloTaskAssemblyFile>
+    <HelloTaskAssemblyFile>$(BinDir)\HelloTask.dll</HelloTaskAssemblyFile>
   </PropertyGroup>
   
   <Target Name="_CleanTargetDir">
@@ -22,11 +23,11 @@
   
   <Target Name="GenerateHelloWorldProject">
     <MSBuild Projects="$(SrcDir)\HelloWorld.csproj"
-      Properties="OutputPath=$(TargetBinPath)" />
+      Properties="OutputPath=$(BinDir)" />
   </Target>
   
   <Target Name="GenerateHelloTaskProject">
     <MSBuild Projects="$(SrcDir)\HelloTask.csproj"
-      Properties="OutputPath=$(TargetBinPath)" />
+      Properties="OutputPath=$(BinDir)" />
   </Target>
 </Project>
