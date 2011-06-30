@@ -1,10 +1,18 @@
 <?xml version="1.0"?>
-<Project ToolsVersion="4.0" DefaultTargets="Run" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <TargetDir>$(MSBuildProjectDirectory)\target\</TargetDir>
+  </PropertyGroup>
+  
   <ItemGroup>
-    <ProjectToBuild Include="$(MSBuildProjectDirectory)\*\*.proj" />
+    <ProjectToBuild Include="$(MSBuildProjectDirectory)\Zealib.Build*\*.proj" />
   </ItemGroup>
-    
-  <Target Name="Run">
+  
+  <Target Name="Clean">
+    <RemoveDir Directories="$(TargetDir)" />
+  </Target>
+  
+  <Target Name="Build" DependsOnTargets="Clean">
      <MSBuild Projects="@(ProjectToBuild)" StopOnFirstFailure="True"
         Properties="HostSpec=True"/>
   </Target>

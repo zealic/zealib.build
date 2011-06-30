@@ -4,6 +4,7 @@
   <Import Project="$(MSBuildProjectDirectory)\..\Common.props" />
   
   <PropertyGroup>
+    <BuildDir>$(BuildDir)\..\</BuildDir>
     <ProjectHookBeforeFile>$(BuildDir)\ProjectHook.Before.xml</ProjectHookBeforeFile>
     <ProjectHookAfterFile>$(BuildDir)\ProjectHook.After.xml</ProjectHookAfterFile>
     <DummyTemplateFile>$(BuildDir)\Dummy.tt</DummyTemplateFile>
