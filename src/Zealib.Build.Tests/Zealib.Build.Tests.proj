@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<Project ToolsVersion="4.0" DefaultTargets="Run" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ProjectToBuild Include="$(MSBuildProjectDirectory)\*\*.proj" />
+  </ItemGroup>
+    
+  <Target Name="Run">
+     <MSBuild Projects="@(ProjectToBuild)" StopOnFirstFailure="True"
+        Properties="HostSpec=True"/>
+  </Target>
+</Project>

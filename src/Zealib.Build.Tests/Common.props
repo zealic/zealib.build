@@ -6,17 +6,19 @@
   
   <Import Project="$(ZealibBuildPath)\Zealib.Build.targets" />
   
-  <Target Name="_CleanTargetDir">
-    <RemoveDir Directories="$(TargetDir)" />
-  </Target>
-  
   <PropertyGroup>
+    <TestName>$(MSBuildProjectName)</TestName>
+    <TargetDir>$(TargetDir)\$([System.IO.Directory]::GetParent($(MSBuildProjectFullPath)).Name)\$(TestName)\</TargetDir>
     <TargetBinPath>$(TargetDir)\bin\</TargetBinPath>
     <HelloWorldProjectFile>$(SrcDir)\HelloWorld.csproj</HelloWorldProjectFile>
     <HelloWorldAssemblyFile>$(TargetBinPath)\HelloWorld.dll</HelloWorldAssemblyFile>
     <HelloTaskProjectFile>$(SrcDir)\HelloTask.csproj</HelloTaskProjectFile>
     <HelloTaskAssemblyFile>$(TargetBinPath)\HelloTask.dll</HelloTaskAssemblyFile>
   </PropertyGroup>
+  
+  <Target Name="_CleanTargetDir">
+    <RemoveDir Directories="$(TargetDir)" />
+  </Target>
   
   <Target Name="GenerateHelloWorldProject">
     <MSBuild Projects="$(SrcDir)\HelloWorld.csproj"
