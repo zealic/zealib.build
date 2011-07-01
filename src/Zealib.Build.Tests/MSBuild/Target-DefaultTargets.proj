@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<Project ToolsVersion="4.0" DefaultTargets="Prepare;Target-DefaultTarget"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildProjectDirectory)\..\Common.props" />
+  
+  <Target Name="Prepare">
+    <Error Condition="'$(TestName)' == ''" Text="Must import Common.props." Code="1" />
+  </Target>
+  
+  <Target Name="Target-DefaultTarget">
+    <Message Text="Target-DefaultTarget successful." />
+  </Target>
+</Project>

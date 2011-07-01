@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<Project ToolsVersion="4.0" DefaultTargets="Target-InputsAndOutputs"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildProjectDirectory)\..\Common.props" />
+  
+  <PropertyGroup>
+    <TouchFile>$(BuildDir)\TouchMe.txt</TouchFile>
+    <ResultFile>$(TargetDir)\Result.txt</ResultFile>
+  </PropertyGroup>
+  
+  <Target Name="Prepare-Touch">
+    <Delete Files="$(ResultFile)" />
+    <Touch Files="$(TouchFile)" />
+  </Target>
+  
+  <Target Name="Prepare-Untouch">
+    <Delete Files="$(ResultFile)" />
+    <Touch Files="$(TouchFile)" Time="1999-07-01 00:00:00" />
+  </Target>
+  
+  <Target Name="TestCore" Inputs="$(TouchFile)" Outputs="$(ResultFile)">
+    <Touch AlwaysCreate="True" Files="$(ResultFile)" />
+  </Target>
+  
+  <Target Name="Verify-Touch">
+    <Error Condition="!Exists($(ResultFile))" Text="Invalid status." />
+  </Target>
+  
+  <Target Name="Verify-Untouch">
+    <Error Condition="Exists($(ResultFile))" Text="Invalid status." />
+  </Target>
+  
+  <Target Name="Target-InputsAndOutputs" DependsOnTargets="
+      Prepare-Touch;TestCore;Verify-Touch;
+      Prepare-Untouch;TestCore;Verify-Untouch">
+    <Message Text="Target-InputsAndOutputs successful." />
+  </Target>
+</Project>

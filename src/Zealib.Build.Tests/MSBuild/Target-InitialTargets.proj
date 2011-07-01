@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<Project ToolsVersion="4.0" DefaultTargets="Target-InitialTarget" InitialTargets="Initialize"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildProjectDirectory)\..\Common.props" />
+  
+  <Target Name="Initialize">
+    <Error Condition="'$(TestName)' == ''" Text="Must import Common.props." Code="1" />
+  </Target>
+  
+  <Target Name="Target-InitialTarget">
+    <Message Text="Target-InitialTarget successful." />
+  </Target>
+</Project>

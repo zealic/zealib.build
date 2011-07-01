@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<Project ToolsVersion="4.0" DefaultTargets="Target-BeforeTargets-And-AfterTargets"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildProjectDirectory)\..\Common.props" />
+  
+  <Target Name="BeforeAction" BeforeTargets="Target-BeforeTargets-And-AfterTargets">
+    <PropertyGroup>
+      <BeforeValue>True</BeforeValue>
+    </PropertyGroup>
+    <Message Text="BeforeValue = $(BeforeValue)" />
+  </Target>
+  
+  <Target Name="AfterAction" AfterTargets="Target-BeforeTargets-And-AfterTargets">
+    <PropertyGroup>
+      <AfterValue>True</AfterValue>
+    </PropertyGroup>
+    <Message Text="AfterValue = $(AfterValue)" />
+  </Target>
+  
+  <Target Name="Target-BeforeTargets-And-AfterTargets">
+    <Error Condition="$(BeforeValue) != True" Text="Invalid status." Code="1" />
+    <Error Condition="$(AfterValue) == True" Text="Invalid status." Code="1" />
+    
+    <Message Text="Target-BeforeTargets-And-AfterTargets successful." />
+  </Target>
+</Project>
