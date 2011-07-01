@@ -13,10 +13,13 @@
   </ItemGroup>
   
   <Target Name="ProcessFile-Base64">
-    <ProcessFile InputFile="$(DataFile)" OutputFile="$(ActualOutputFile)" Pipelines="@(ProcessPipelines)" />
+    <ProcessFile IsEncode="True" Pipelines="@(ProcessPipelines)" 
+      InputFile="$(DataFile)" OutputFile="$(ActualOutputFile)" />
     
     <!-- Verify -->
-    <UnBase64 InputFile="$(ActualOutputFile)" OutputFile="$(ActualResultFile)" />
+    <ProcessFile IsEncode="False" Pipelines="@(ProcessPipelines)" 
+      InputFile="$(ActualOutputFile)" OutputFile="$(ActualResultFile)" />
+    
     <File TaskAction="GetChecksum"
       Path="$(DataFile)">
       <Output PropertyName="ExpcectedChecksum" TaskParameter="Checksum" />
@@ -31,23 +34,4 @@
     
     <Message Text="ProcessFile-Base64 successful." />
   </Target>
-  
-  <UsingTask
-      TaskName="UnBase64"
-      TaskFactory="CodeTaskFactory"
-      AssemblyFile="$(MSBuildTasks-Assembly)" >
-    <ParameterGroup>
-      <InputFile ParameterType="System.String" Required="True" />
-      <OutputFile ParameterType="System.String" Required="True" />
-    </ParameterGroup>
-    <Task>
-      <Code Type="Fragment" Language="cs">
-      <![CDATA[
-var inText = System.IO.File.ReadAllText(InputFile);
-var decodedBytes = Convert.FromBase64String(inText);
-System.IO.File.WriteAllBytes(OutputFile, decodedBytes);
-]]>
-      </Code>
-    </Task>
-  </UsingTask>
 </Project>
