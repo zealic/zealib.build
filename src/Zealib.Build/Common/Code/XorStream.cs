@@ -1,4 +1,4 @@
-namespace Zealib.IO
+﻿namespace Zealib.IO
 {
     using System;
     using System.IO;
@@ -6,15 +6,17 @@ namespace Zealib.IO
     public class XorStream : Stream
     {
         private int m_FactorIndex;
+        private readonly byte[] _Factors;
 
         public XorStream(Stream baseStream, byte[] factors)
         {
+            if (baseStream == null) throw new ArgumentNullException("baseStream");
+            if (factors == null) throw new ArgumentNullException("factors");
             BaseStream = baseStream;
-            Factors = new byte[factors.Length];
-            Array.Copy(factors, Factors, factors.Length);
+            _Factors = (byte[])factors.Clone();
         }
 
-        public byte[] Factors { get; private set; }
+        public byte[] Factors { get { return (byte[])_Factors.Clone(); } }
 
         public Stream BaseStream { get; private set; }
 

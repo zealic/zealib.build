@@ -24,15 +24,15 @@
     
     <File TaskAction="GetChecksum"
       Path="$(DataFile)">
-      <Output PropertyName="ExpcectedChecksum" TaskParameter="Checksum" />
+      <Output PropertyName="ExpectedChecksum" TaskParameter="Checksum" />
     </File>
     <File TaskAction="GetChecksum"
       Path="$(ActualResultFile)">
       <Output PropertyName="ActualChecksum" TaskParameter="Checksum" />
     </File>
     
-    <Message Text="ActualChecksum=$(ActualChecksum), ExpcectedChecksum=$(ExpcectedChecksum)" />
-    <Error Condition="'$(ActualChecksum)' != '$(ExpcectedChecksum)'" Code="1" />
+    <Message Text="ActualChecksum=$(ActualChecksum), ExpectedChecksum=$(ExpectedChecksum)" />
+    <Error Condition="'$(ActualChecksum)' != '$(ExpectedChecksum)'" Code="1" />
     
     <Message Text="ProcessFile-Xor successful." />
   </Target>

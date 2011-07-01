@@ -21,15 +21,15 @@
     <!-- Verify -->
     <File TaskAction="GetChecksum"
       Path="$(ExpectedResultFile)">
-      <Output PropertyName="ExpcectedChecksum" TaskParameter="Checksum" />
+      <Output PropertyName="ExpectedChecksum" TaskParameter="Checksum" />
     </File>
     <File TaskAction="GetChecksum"
       Path="$(ActualResultFile)">
       <Output PropertyName="ActualChecksum" TaskParameter="Checksum" />
     </File>
     
-    <Message Text="ActualChecksum=$(ActualChecksum), ExpcectedChecksum=$(ExpcectedChecksum)" />
-    <Error Condition="'$(ActualChecksum)' != '$(ExpcectedChecksum)'" Code="1" />
+    <Message Text="ActualChecksum=$(ActualChecksum), ExpectedChecksum=$(ExpectedChecksum)" />
+    <Error Condition="'$(ActualChecksum)' != '$(ExpectedChecksum)'" Code="1" />
   </Target>
   
   <Target Name="CleanSolutionFile-Without-DestinationFiles">
@@ -44,14 +44,14 @@
     <!--- Verify -->
     <File TaskAction="GetChecksum"
       Path="$(ExpectedResultFile)">
-      <Output PropertyName="ExpcectedChecksum" TaskParameter="Checksum" />
+      <Output PropertyName="ExpectedChecksum" TaskParameter="Checksum" />
     </File>
     <File TaskAction="GetChecksum"
       Path="$(OverwriteResultFile)">
       <Output PropertyName="ActualChecksum" TaskParameter="Checksum" />
     </File>
     
-    <Message Text="ActualChecksum=$(ActualChecksum), ExpcectedChecksum=$(ExpcectedChecksum)" />
-    <Error Condition="'$(ActualChecksum)' != '$(ExpcectedChecksum)'" Code="1" />
+    <Message Text="ActualChecksum=$(ActualChecksum), ExpectedChecksum=$(ExpectedChecksum)" />
+    <Error Condition="'$(ActualChecksum)' != '$(ExpectedChecksum)'" Code="1" />
   </Target>
 </Project>

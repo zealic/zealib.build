@@ -1,4 +1,4 @@
-namespace Zealib.IO
+﻿namespace Zealib.IO
 {
     using System;
     using System.IO;
@@ -8,17 +8,18 @@ namespace Zealib.IO
     {
         public enum Mode { Encode, Decode }
 
+        private const int _BUFFER_THRESHOLD = 1024;
         private bool _isClosed, _disposed;
         private Mode _mode;
         private int _totalWritten, _totalFlushed, _outputLineLength;
         private Stream _captiveStream;
         private MemoryStream _buffer;
         private CryptoStream _innerStream;
-        private static readonly int _BUFFER_THRESHOLD = 1024;
 
-        public Base64Stream(Stream stream, Mode mode)
+        public Base64Stream(Stream baseStream, Mode mode)
         {
-            _captiveStream = stream;
+            if (baseStream == null) throw new ArgumentNullException("baseStream");
+            _captiveStream = baseStream;
             _mode = mode;
         }
 
