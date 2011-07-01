@@ -4,7 +4,7 @@
   
   <PropertyGroup>
     <DataFile>$(BuildDir)\Data.txt</DataFile>
-    <ExpcectedResultFile>$(BuildDir)\ExpcectedResult.txt</ExpcectedResultFile>
+    <ActualOutputFile>$(TargetDir)\ActualResult.bin</ActualOutputFile>
     <ActualResultFile>$(TargetDir)\ActualResult.txt</ActualResultFile>
   </PropertyGroup>
   
@@ -15,11 +15,12 @@
   </ItemGroup>
   
   <Target Name="ProcessFile-Xor">
-    <ProcessFile InputFile="$(DataFile)" OutputFile="$(ActualResultFile)" Pipelines="@(ProcessPipelines)" />
+    <ProcessFile InputFile="$(DataFile)" OutputFile="$(ActualOutputFile)" Pipelines="@(ProcessPipelines)" />
     
     <!-- Verify -->
+    <ProcessFile InputFile="$(ActualOutputFile)" OutputFile="$(ActualResultFile)" Pipelines="@(ProcessPipelines)" />
     <File TaskAction="GetChecksum"
-      Path="$(ExpcectedResultFile)">
+      Path="$(DataFile)">
       <Output PropertyName="ExpcectedChecksum" TaskParameter="Checksum" />
     </File>
     <File TaskAction="GetChecksum"
