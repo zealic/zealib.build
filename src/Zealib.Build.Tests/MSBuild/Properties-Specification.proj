@@ -13,6 +13,12 @@
     </SpecTargets>
   </PropertyGroup>
   
+  <Target Name="Initialize" BeforeTargets="">
+    <GetEnvironmentInfo>
+      <Output TaskParameter="Is64BitOperatingSystem" PropertyName="Is64BitOS" />
+    </GetEnvironmentInfo>
+  </Target>
+  
   <Target Name="Properties-Specification" DependsOnTargets="$(SpecTargets)">
     <Message Text="UsingTask-With-CodeTaskFactory successful." />
   </Target>
@@ -40,28 +46,50 @@
   </Target>
   
   <Target Name="Spec-PropertyFromReserved">
-    <Error Condition="
-        '$(MSBuildProjectDirectory)' == ''
+    <!-- FOR Basic -->
+    <Error Condition="'$(MSBuildStartupDirectory)' == ''"
+      Text="Spec-PropertyFromReserved FAILED" Code="2" />
+    <Error Condition="'$(MSBuildBinPath)' == ''"
+      Text="Spec-PropertyFromReserved FAILED" Code="2" />
+    <Error Condition="'$(MSBuildToolsVersion)' == '' OR '$(MSBuildToolsPath)' == ''"
+      Text="Spec-PropertyFromReserved FAILED" Code="2" />
+    
+    <!-- FOR ExtensionsPath -->
+    <Error Condition="'$(MSBuildExtensionsPath)' == ''
+        OR '$(MSBuildExtensionsPath32)' == ''"
+      Text="Spec-PropertyFromReserved FAILED" Code="2" />
+    <Error Condition="$(Is64BitOS) == True AND '$(MSBuildExtensionsPath64)' == ''"
+      Text="Spec-PropertyFromReserved FAILED" Code="2" />
+     
+     <!-- FOR Project -->
+    <Error Condition="'$(MSBuildProjectDirectory)' == ''
+        OR '$(MSBuildProjectDirectoryNoRoot)' == ''
         OR '$(MSBuildProjectFile)' == ''
         OR '$(MSBuildProjectExtension)' == ''
         OR '$(MSBuildProjectFullPath)' == ''
         OR '$(MSBuildProjectName)' == ''
-        OR '$(MSBuildBinPath)' == ''
-        OR '$(MSBuildProjectDefaultTargets)' == ''
-        OR '$(MSBuildStartupDirectory)' == ''"
-      Text="Spec-PropertyFromEnvironmentVariable FAILED" Code="2" />
+        OR '$(MSBuildProjectDefaultTargets)' == ''"
+      Text="Spec-PropertyFromReserved FAILED" Code="2" />
       
-    <Error Condition="'$(MSBuildExtensionsPath)' == ''
-        OR '$(MSBuildExtensionsPath32)' == ''"
-      Text="Spec-PropertyFromEnvironmentVariable FAILED" Code="2" />
+    <Error Condition="'$(MSBuildThisFileDirectory)' == ''
+        OR '$(MSBuildThisFileDirectoryNoRoot)' == ''
+        OR '$(MSBuildThisFile)' == ''
+        OR '$(MSBuildThisFileExtension)' == ''
+        OR '$(MSBuildThisFileFullPath)' == ''
+        OR '$(MSBuildThisFileName)' == ''"
+      Text="Spec-PropertyFromReserved FAILED" Code="2" />
     
-    <GetEnvironmentInfo>
-      <Output TaskParameter="Is64BitOperatingSystem" PropertyName="Is64BitOS" />
-    </GetEnvironmentInfo>
-    <Error Condition="$(Is64BitOS) == True AND '$(MSBuildExtensionsPath64)' == ''"
-      Text="Spec-PropertyFromEnvironmentVariable FAILED" Code="2" />
-      
-    <Message Text="Spec-PropertyFromEnvironmentVariable PASS." />
+    <!-- FOR Other -->
+    <Message Text=
+"MSBuildNodeCount = $(MSBuildNodeCount)
+MSBuildLastTaskResult = $(MSBuildLastTaskResult)
+MSBuildProgramFiles32 = $(MSBuildProgramFiles32)" />
+    <Error Condition="'$(MSBuildNodeCount)' == ''
+        OR '$(MSBuildLastTaskResult)' == ''
+        OR '$(MSBuildProgramFiles32)' == ''"
+      Text="Spec-PropertyFromReserved FAILED" Code="2" />
+    
+    <Message Text="Spec-PropertyFromReserved PASS." />
   </Target>
   
   <Target Name="Spec-PropertyFromRegistry">
