@@ -29,4 +29,5 @@
   
   <Target Name="BeforeBuild" />
   <Target Name="AfterBuild" />
+  <Target Name="CoreBuild" />
 </Project>
