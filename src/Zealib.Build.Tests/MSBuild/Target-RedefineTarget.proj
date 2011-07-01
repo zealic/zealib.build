@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
-<Project ToolsVersion="4.0" DefaultTargets="RedefineTarget"
+<Project ToolsVersion="4.0" DefaultTargets="Target-RedefineTarget"
     xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildProjectDirectory)\..\Common.props" />
   
-  <Target Name="RedefineTarget">
+  <Target Name="Target-RedefineTarget">
     <Error Text="Unexpected target." Code="1" />
   </Target>
   
-  <Target Name="RedefineTarget">
+  <Target Name="Target-RedefineTarget">
     <Message Text="UsingTask-With-CodeTaskFactory successful." />
   </Target>
 </Project>
