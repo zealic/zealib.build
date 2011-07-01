@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<Project ToolsVersion="4.0" DefaultTargets="UsingTask-With-CodeTaskFactory"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildProjectDirectory)\..\Common.props" />
+  
+  <PropertyGroup>
+    <CustomName>Hello MyTask</CustomName>
+    <CustomResult>true</CustomResult>
+  </PropertyGroup>
+  
+  <Target Name="UsingTask-With-CodeTaskFactory">
+    <MyTask />
+    <Message Text="UsingTask-With-CodeTaskFactory successful." />
+  </Target>
+  
+  <UsingTask
+      TaskName="MyTask"
+      TaskFactory="CodeTaskFactory"
+      AssemblyFile="$(MSBuildTasks-Assembly)" >
+    <Task>
+      <Using Namespace="System" />
+      <Code Type="Method" Language="cs">
+      <![CDATA[
+public override bool Execute() {
+  Log.LogMessage("$(CustomName)");
+  return $(CustomResult);
+}]]>
+      </Code>
+    </Task>
+  </UsingTask>
+</Project>
