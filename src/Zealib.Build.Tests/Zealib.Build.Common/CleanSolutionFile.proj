@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<Project ToolsVersion="4.0" DefaultTargets="CleanSolutionFile" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildProjectDirectory)\..\Common.props" />
+  
+  <PropertyGroup>
+    <DataFile>$(BuildDir)\Dummy.sln</DataFile>
+    <ExpectedResultFile>$(BuildDir)\ExpectedResult.sln</ExpectedResultFile>
+    <ActualResultFile>$(TargetDir)\ActualResult.sln</ActualResultFile>
+  </PropertyGroup>
+  
+  <Target Name="CleanSolutionFile" DependsOnTargets="
+      CleanSolutionFile-With-DestinationFiles;
+      CleanSolutionFile-Without-DestinationFiles">
+    <Message Text="CleanSolutionFile successful." />
+  </Target>
+  
+  <Target Name="CleanSolutionFile-With-DestinationFiles">
+    <CleanSolutionFile Files="$(DataFile)" DestinationFiles="$(ActualResultFile)"
+      ProjectNamePatterns="\.Tests$" ItemPatterns="\.TestBase.cs$" />
+    
+    <!-- Verify -->
+    <File TaskAction="GetChecksum"
+      Path="$(ExpectedResultFile)">
+      <Output PropertyName="ExpcectedChecksum" TaskParameter="Checksum" />
+    </File>
+    <File TaskAction="GetChecksum"
+      Path="$(ActualResultFile)">
+      <Output PropertyName="ActualChecksum" TaskParameter="Checksum" />
+    </File>
+    
+    <Message Text="ActualChecksum=$(ActualChecksum), ExpcectedChecksum=$(ExpcectedChecksum)" />
+    <Error Condition="'$(ActualChecksum)' != '$(ExpcectedChecksum)'" Code="1" />
+  </Target>
+  
+  <Target Name="CleanSolutionFile-Without-DestinationFiles">
+    <PropertyGroup>
+      <OverwriteResultFile>$(TargetDir)\Dummy.sln</OverwriteResultFile>
+    </PropertyGroup>
+  
+    <Copy SourceFiles="$(DataFile)" DestinationFolder="$(TargetDir)" />
+    <CleanSolutionFile Files="$(OverwriteResultFile)"
+      ForceOverwrite="True" ProjectNamePatterns="\.Tests$" ItemPatterns="\.TestBase.cs$" />
+    
+    <!--- Verify -->
+    <File TaskAction="GetChecksum"
+      Path="$(ExpectedResultFile)">
+      <Output PropertyName="ExpcectedChecksum" TaskParameter="Checksum" />
+    </File>
+    <File TaskAction="GetChecksum"
+      Path="$(OverwriteResultFile)">
+      <Output PropertyName="ActualChecksum" TaskParameter="Checksum" />
+    </File>
+    
+    <Message Text="ActualChecksum=$(ActualChecksum), ExpcectedChecksum=$(ExpcectedChecksum)" />
+    <Error Condition="'$(ActualChecksum)' != '$(ExpcectedChecksum)'" Code="1" />
+  </Target>
+</Project>

@@ -19,23 +19,57 @@ public class CleanSolutionFile : Task
     [Required]
     public string[] ItemPatterns { get; set; }
 
+    [Output]
+    public string[] DestinationFiles { get; set; }
+
+    public bool ForceOverwrite { get; set; }
+
     public override bool Execute()
     {
+        if (Files == null) Files = new string[0];
+        if (DestinationFiles == null) DestinationFiles = new string[0];
         if (ProjectNamePatterns == null) ProjectNamePatterns = new string[0];
         if (ItemPatterns == null) ItemPatterns = new string[0];
 
-        foreach (var file in Files) RemoveProjectFromSolution(file);
+        if (DestinationFiles.Length == 0)
+        {
+            foreach (var file in Files)
+                RemoveProjectFromSolution(file, file);
+            DestinationFiles = (string[])Files.Clone();
+        }
+        else if (Files.Length == DestinationFiles.Length)
+        {
+            for (var i = 0; i < Files.Length; i++)
+            {
+                var file = Files[i];
+                var destFile = DestinationFiles[i];
+                RemoveProjectFromSolution(file, destFile);
+            }
+        }
+        else
+        {
+            Log.LogError("DestinationFiles count must equals Files count or be empty.");
+        }
         return true;
     }
 
-    private void RemoveProjectFromSolution(string slnFile)
+    private void RemoveProjectFromSolution(string slnFile, string destFile)
     {
+        if (slnFile == null) throw new ArgumentNullException("slnFile");
+        if (destFile == null) throw new ArgumentNullException("destFile");
+        if (!File.Exists(slnFile)) throw new ArgumentException(
+            string.Format("Can not found file \"{0}\".", slnFile));
+        if(!ForceOverwrite && File.Exists(destFile))
+            throw new ArgumentException(string.Format
+                ("Destination file \"{0}\" already exists, "
+                + "You can use ForceOverwrite to force overwrite file.", destFile));
+
         var sln = new SolutionInfo(slnFile);
         foreach (var pattern in ProjectNamePatterns)
             sln.RemoveProjects(p => new Regex(pattern).IsMatch(p.ProjectName));
         foreach (var pattern in ItemPatterns)
             sln.RemoveSolutionItems(m => new Regex(pattern).IsMatch(m));
-        File.WriteAllText(slnFile, sln.ToString(), new UTF8Encoding(true, true));
+        File.WriteAllText(destFile, sln.ToString(), new UTF8Encoding(true, true));
     }
 }
 

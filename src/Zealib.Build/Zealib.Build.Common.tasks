@@ -45,8 +45,10 @@ $(ZealibBuild-Code-Base64Stream)
       AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll" >
     <ParameterGroup>
       <Files ParameterType="System.String[]" Required="True" />
+      <DestinationFiles ParameterType="System.String[]" Output="True" />
       <ProjectNamePatterns ParameterType="System.String[]" />
       <ItemPatterns ParameterType="System.String[]" />
+      <ForceOverwrite ParameterType="System.Boolean" />
     </ParameterGroup>
     <Task>
       <Code Source="$(ZealibBuild-CodeFile-CleanSolutionFile)" Language="cs" />
