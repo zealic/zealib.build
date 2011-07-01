@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<Project ToolsVersion="4.0" DefaultTargets="UsingTask-With-CodeTaskFactory"
+<Project ToolsVersion="4.0" DefaultTargets="UsingTask-InlineTask"
     xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildProjectDirectory)\..\Common.props" />
   
@@ -8,9 +8,9 @@
     <CustomResult>true</CustomResult>
   </PropertyGroup>
   
-  <Target Name="UsingTask-With-CodeTaskFactory">
+  <Target Name="UsingTask-InlineTask">
     <MyTask />
-    <Message Text="UsingTask-With-CodeTaskFactory successful." />
+    <Message Text="UsingTask-InlineTask successful." />
   </Target>
   
   <UsingTask
