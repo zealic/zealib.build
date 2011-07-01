@@ -18,6 +18,10 @@ $(ZealibBuild-Code-Base64Stream)
     </ZealibBuild-TaskCode-ProcessFile>
   </PropertyGroup>
   
+  <PropertyGroup>
+    <MSBuildTasks-Assembly Condition="'$(MSBuildTasks-Assembly)' == ''">$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll</MSBuildTasks-Assembly>
+  </PropertyGroup>
+  
   <UsingTask
       TaskName="ProcessFile"
       TaskFactory="CodeTaskFactory"
