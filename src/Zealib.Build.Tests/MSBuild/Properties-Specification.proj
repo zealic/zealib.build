@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<Project ToolsVersion="4.0" DefaultTargets="Properties-Specification"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildProjectDirectory)\..\Common.props" />
+  
+  <PropertyGroup>
+    <SpecTargets>
+      Spec-PropertyFromDefine;
+      Spec-PropertyFromFunction;
+      Spec-PropertyFromEnvironmentVariable;
+      Spec-PropertyFromReserved;
+      Spec-PropertyFromRegistry;
+    </SpecTargets>
+  </PropertyGroup>
+  
+  <Target Name="Properties-Specification" DependsOnTargets="$(SpecTargets)">
+    <Message Text="UsingTask-With-CodeTaskFactory successful." />
+  </Target>
+  
+  <Target Name="Spec-PropertyFromDefine">
+    <PropertyGroup>
+      <DefineValue>GoMan</DefineValue>
+    </PropertyGroup>
+    <Error Condition="'$(DefineValue)' != 'GoMan'" Text="Spec-PropertyFromDefine FAILED" Code="1" />
+    <Message Text="Spec-PropertyFromDefine PASS." />
+  </Target>
+  
+  <Target Name="Spec-PropertyFromFunction">
+    <PropertyGroup>
+      <FunctionValue>$([System.String]::Format('Hello {0}.', 'WTF'))</FunctionValue>
+    </PropertyGroup>
+    <Error Condition="'$(FunctionValue)' != 'Hello WTF.'" Code="2" />
+    
+    <Message Text="Spec-PropertyFromFunction PASS." />
+  </Target>
+  
+  <Target Name="Spec-PropertyFromEnvironmentVariable">
+    <Error Condition="'$(Path)' == ''" Text="Spec-PropertyFromEnvironmentVariable FAILED" Code="2" />
+    <Message Text="Spec-PropertyFromEnvironmentVariable PASS." />
+  </Target>
+  
+  <Target Name="Spec-PropertyFromReserved">
+    <Error Condition="
+        '$(MSBuildProjectDirectory)' == ''
+        OR '$(MSBuildProjectFile)' == ''
+        OR '$(MSBuildProjectExtension)' == ''
+        OR '$(MSBuildProjectFullPath)' == ''
+        OR '$(MSBuildProjectName)' == ''
+        OR '$(MSBuildBinPath)' == ''
+        OR '$(MSBuildProjectDefaultTargets)' == ''
+        OR '$(MSBuildStartupDirectory)' == ''"
+      Text="Spec-PropertyFromEnvironmentVariable FAILED" Code="2" />
+      
+    <Error Condition="'$(MSBuildExtensionsPath)' == ''
+        OR '$(MSBuildExtensionsPath32)' == ''"
+      Text="Spec-PropertyFromEnvironmentVariable FAILED" Code="2" />
+    
+    <GetEnvironmentInfo>
+      <Output TaskParameter="Is64BitOperatingSystem" PropertyName="Is64BitOS" />
+    </GetEnvironmentInfo>
+    <Error Condition="$(Is64BitOS) == True AND '$(MSBuildExtensionsPath64)' == ''"
+      Text="Spec-PropertyFromEnvironmentVariable FAILED" Code="2" />
+      
+    <Message Text="Spec-PropertyFromEnvironmentVariable PASS." />
+  </Target>
+  
+  <Target Name="Spec-PropertyFromRegistry">
+    <Error
+      Condition="'$(registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion@ProductName)' == ''"
+      Code="2" />
+    
+    <Message Text="Spec-PropertyFromRegistry PASS." />
+  </Target>
+  
+  
+  <UsingTask
+      TaskName="GetEnvironmentInfo"
+      TaskFactory="CodeTaskFactory"
+      AssemblyFile="$(MSBuildTasks-Assembly)" >
+    <ParameterGroup>
+      <Is64BitOperatingSystem ParameterType="System.Boolean" Output="True" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System" />
+      <Code Type="Fragment" Language="cs">
+      <![CDATA[
+Is64BitOperatingSystem = System.Environment.Is64BitOperatingSystem;
+]]>
+      </Code>
+    </Task>
+  </UsingTask>
+</Project>
