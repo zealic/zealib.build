@@ -5,7 +5,9 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <ProjectToBuild Include="$(MSBuildProjectDirectory)\Zealib.Build*\*.proj" />
+    <ProjectToBuild Include="
+      $(MSBuildProjectDirectory)\MSBuild\*.proj;
+      $(MSBuildProjectDirectory)\Zealib.Build*\*.proj" />
   </ItemGroup>
   
   <Target Name="Clean">
