@@ -16,7 +16,7 @@
   
   <Target Name="CleanSolutionFile-With-DestinationFiles">
     <CleanSolutionFile Files="$(DataFile)" DestinationFiles="$(ActualResultFile)"
-      ProjectNamePatterns="\.Tests$" ItemPatterns="\.TestBase.cs$" />
+      ProjectNamePatterns="\.Tests$" ItemPatterns="TestBase.cs$" />
     
     <!-- Verify -->
     <File TaskAction="GetChecksum"
@@ -39,7 +39,7 @@
   
     <Copy SourceFiles="$(DataFile)" DestinationFolder="$(TargetDir)" />
     <CleanSolutionFile Files="$(OverwriteResultFile)"
-      ForceOverwrite="True" ProjectNamePatterns="\.Tests$" ItemPatterns="\.TestBase.cs$" />
+      ForceOverwrite="True" ProjectNamePatterns="\.Tests$" ItemPatterns="TestBase.cs$" />
     
     <!--- Verify -->
     <File TaskAction="GetChecksum"

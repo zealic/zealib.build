@@ -21,7 +21,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "000_Misc", "000_Misc", "{E6
 		Misc\DataSchema.tt = Misc\DataSchema.tt
 		Misc\Dummy.Product.xml = Misc\Dummy.Product.xml
 		Misc\SharedAssemblyInfo.cs = Misc\SharedAssemblyInfo.cs
-		Misc\TestBase.cs = Misc\TestBase.cs
 		Misc\TypeMapping.xml = Misc\TypeMapping.xml
 	EndProjectSection
 EndProject
