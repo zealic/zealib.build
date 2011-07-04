@@ -11,7 +11,7 @@
     <HelloWorldAssemblyFile>$(Test-BinDir)\HelloWorld.dll</HelloWorldAssemblyFile>
   </PropertyGroup>
   
-  <Target Name="_CleanDummy" BeforeTargets="Test">
+  <Target Name="CleanGeneratedFile" BeforeTargets="Test">
     <Delete Files="$(DummySourceFile)" />
   </Target>
   
