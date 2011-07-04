@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003"
+    InitialTargets="PrepareTestEnvironment"
+    DefaultTargets="TestCase">
+  <PropertyGroup>
+    <MSBuildTasks-Assembly Condition="'$(MSBuildTasks-Assembly)' == ''">$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll</MSBuildTasks-Assembly>
+  </PropertyGroup>
+  
+  <PropertyGroup>
+    <TestName>$(MSBuildProjectName)</TestName>
+    <Test-BaseDir>$(MSBuildThisFileDirectory)</Test-BaseDir>
+    <Test-FixtureDir>$(MSBuildProjectDirectory)\$(TestName)\</Test-FixtureDir>
+    <Test-TargetDir>$(Test-BaseDir)\target\</Test-TargetDir>
+    <Test-ResultDir>$(Test-TargetDir)\$([System.IO.Directory]::GetParent($(MSBuildProjectFullPath)).Name)\$(TestName)\</Test-ResultDir>
+    <Test-SrcDir>$(Test-BaseDir)\src</Test-SrcDir>
+    <Test-BinDir>$(Test-ResultDir)\bin\</Test-BinDir>
+  </PropertyGroup>
+  
+  <PropertyGroup>
+    <TestDependsOn>
+      BeforeTest;
+      Test;
+      AfterTest
+    </TestDependsOn>
+  </PropertyGroup>
+  <Target Name="TestCase" DependsOnTargets="$(TestDependsOn)" />
+  
+  <Target Name="BeforeTest">
+    <Message Text="Starting $(TestName) test..." />
+  </Target>
+  
+  <Target Name="AfterTest" AfterTargets="Test">
+    <Message Text="$(TestName) successful." />
+  </Target>
+  
+  
+  <!-- Initialize targets -->
+  <Target Name="PrepareTestEnvironment">
+    <RemoveDir Condition="Exists($(Test-ResultDir))" Directories="$(Test-ResultDir)" />
+    <MakeDir Directories="$(Test-ResultDir);$(Test-BinDir)" />
+    
+    <Error Code="100" Condition="'$(TestName)' != '$(MSBuildProjectName)'"
+      Text="TestName '$(TestName)' not matched file name '$(MSBuildProjectName)'." />
+  </Target>
+  
+  
+  <!-- ==================== Resources ==================== -->
+  <PropertyGroup>
+    <HelloWorldProjectFile>$(Test-SrcDir)\HelloWorld.csproj</HelloWorldProjectFile>
+    <HelloWorldAssemblyFile>$(Test-BinDir)\HelloWorld.dll</HelloWorldAssemblyFile>
+    <HelloTaskProjectFile>$(Test-SrcDir)\HelloTask.csproj</HelloTaskProjectFile>
+    <HelloTaskAssemblyFile>$(Test-BinDir)\HelloTask.dll</HelloTaskAssemblyFile>
+  </PropertyGroup>
+  
+  <Target Name="GenerateHelloWorldProject">
+    <MSBuild Projects="$(Test-SrcDir)\HelloWorld.csproj"
+      Properties="OutputPath=$(Test-BinDir)" />
+  </Target>
+  
+  <Target Name="GenerateHelloTaskProject">
+    <MSBuild Projects="$(Test-SrcDir)\HelloTask.csproj"
+      Properties="OutputPath=$(Test-BinDir)" />
+  </Target>
+</Project>

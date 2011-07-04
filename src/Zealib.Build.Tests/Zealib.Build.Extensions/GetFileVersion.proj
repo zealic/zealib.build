@@ -1,21 +1,20 @@
-<?xml version="1.0"?>
-<Project ToolsVersion="4.0" DefaultTargets="GetFileVersion"
-    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildProjectDirectory)\..\Common.props" />
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildProjectDirectory)\..\Test-Zealib.Build.props" />
   
   <PropertyGroup>
-    <FactAssembly>$(BinDir)\FactAssembly.dll</FactAssembly>
+    <FactAssembly>$(Test-BinDir)\FactAssembly.dll</FactAssembly>
   </PropertyGroup>
   
   <ItemGroup>
-    <FactSources Include="$(BuildDir)\*.cs" />
+    <FactSources Include="$(Test-FixtureDir)\*.cs" />
   </ItemGroup>
   
   <Target Name="MakeAssembly">
     <Csc Sources="@(FactSources)" TargetType="Library" OutputAssembly="$(FactAssembly)" />
   </Target>
   
-  <Target Name="GetFileVersion" DependsOnTargets="MakeAssembly">
+  <Target Name="Test" DependsOnTargets="MakeAssembly">
     <GetFileVersion TargetFile="$(FactAssembly)">
       <Output TaskParameter="Version" PropertyName="Version" />
       <Output TaskParameter="VersionMajor" PropertyName="VersionMajor" />
@@ -30,7 +29,5 @@
       AND $(VersionMinor) == 4
       AND $(VersionBuild) == 5
       AND $(VersionRevision) == 6)" Code="1" />
-    
-    <Message Text="GetFileVersion successful." />
   </Target>
 </Project>

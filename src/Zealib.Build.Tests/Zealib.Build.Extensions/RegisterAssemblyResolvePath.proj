@@ -1,12 +1,10 @@
-<?xml version="1.0"?>
-<Project ToolsVersion="4.0" DefaultTargets="RegisterAssemblyResolvePath"
-    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildProjectDirectory)\..\Common.props" />
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildProjectDirectory)\..\Test-Zealib.Build.props" />
   
-  <Target Name="RegisterAssemblyResolvePath" DependsOnTargets="GenerateHelloWorldProject">
-    <RegisterAssemblyResolvePath BinPath="$(BinDir)" />
+  <Target Name="Test" DependsOnTargets="GenerateHelloWorldProject">
+    <RegisterAssemblyResolvePath BinPath="$(Test-BinDir)" />
     <SayHello />
-    <Message Text="RegisterAssemblyResolvePath successful." />
   </Target>
   
   <UsingTask

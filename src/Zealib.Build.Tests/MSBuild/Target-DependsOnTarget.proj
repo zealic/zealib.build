@@ -1,7 +1,6 @@
-<?xml version="1.0"?>
-<Project ToolsVersion="4.0" DefaultTargets="Target-DependsOnTarget"
-    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildProjectDirectory)\..\Common.props" />
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildProjectDirectory)\..\Test-Common.props" />
   
   <Target Name="BeforeAction">
     <PropertyGroup>
@@ -10,9 +9,7 @@
     <Message Text="BeforeValue = $(BeforeValue)" />
   </Target>
   
-  <Target Name="Target-DependsOnTarget" DependsOnTargets="BeforeAction">
+  <Target Name="Test" DependsOnTargets="BeforeAction">
     <Error Condition="$(BeforeValue) != True" Text="Invalid status." Code="1" />
-    
-    <Message Text="Target-DependsOnTarget successful." />
   </Target>
 </Project>

@@ -1,13 +1,15 @@
 <?xml version="1.0"?>
-<Project ToolsVersion="4.0" DefaultTargets="Target-RedefineTarget"
-    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildProjectDirectory)\..\Common.props" />
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildProjectDirectory)\..\Test-Common.props" />
   
-  <Target Name="Target-RedefineTarget">
-    <Error Text="Unexpected target." Code="1" />
+  <Target Name="Test">
+    <PropertyGroup>
+      <UnexpectedValue>True</UnexpectedValue>
+    </PropertyGroup>
   </Target>
   
-  <Target Name="Target-RedefineTarget">
-    <Message Text="UsingTask-With-CodeTaskFactory successful." />
+  <Target Name="Test">
+    <Message Text="Test is running..." />
+    <Error Condition="$(UnexpectedValue) == True" Text="UnexpectedValue has exists." Code="1" />
   </Target>
 </Project>

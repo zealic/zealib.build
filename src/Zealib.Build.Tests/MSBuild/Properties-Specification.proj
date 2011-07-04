@@ -1,10 +1,10 @@
-<?xml version="1.0"?>
-<Project ToolsVersion="4.0" DefaultTargets="Properties-Specification"
-    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildProjectDirectory)\..\Common.props" />
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildProjectDirectory)\..\Test-Common.props" />
   
   <PropertyGroup>
     <SpecTargets>
+      Initialize;
       Spec-PropertyFromDefine;
       Spec-PropertyFromFunction;
       Spec-PropertyFromEnvironmentVariable;
@@ -13,14 +13,13 @@
     </SpecTargets>
   </PropertyGroup>
   
-  <Target Name="Initialize" BeforeTargets="">
+  <Target Name="Initialize">
     <GetEnvironmentInfo>
       <Output TaskParameter="Is64BitOperatingSystem" PropertyName="Is64BitOS" />
     </GetEnvironmentInfo>
   </Target>
   
-  <Target Name="Properties-Specification" DependsOnTargets="$(SpecTargets)">
-    <Message Text="UsingTask-With-CodeTaskFactory successful." />
+  <Target Name="Test" DependsOnTargets="$(SpecTargets)">
   </Target>
   
   <Target Name="Spec-PropertyFromDefine">

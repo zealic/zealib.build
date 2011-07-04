@@ -1,22 +1,20 @@
-<?xml version="1.0"?>
-<Project ToolsVersion="4.0" DefaultTargets="UsingTask-InlineTask"
-    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildProjectDirectory)\..\Common.props" />
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildProjectDirectory)\..\Test-Common.props" />
   
   <PropertyGroup>
     <CustomName>Hello MyTask</CustomName>
     <CustomResult>true</CustomResult>
   </PropertyGroup>
   
-  <Target Name="UsingTask-InlineTask">
+  <Target Name="Test">
     <MyTask />
-    <Message Text="UsingTask-InlineTask successful." />
   </Target>
   
   <UsingTask
       TaskName="MyTask"
       TaskFactory="CodeTaskFactory"
-      AssemblyFile="$(MSBuildTasks-Assembly)" >
+      AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll" >
     <Task>
       <Using Namespace="System" />
       <Code Type="Method" Language="cs">

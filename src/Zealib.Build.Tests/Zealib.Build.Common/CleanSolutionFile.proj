@@ -1,17 +1,16 @@
 <?xml version="1.0"?>
-<Project ToolsVersion="4.0" DefaultTargets="CleanSolutionFile" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildProjectDirectory)\..\Common.props" />
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildProjectDirectory)\..\Test-Zealib.Build.props" />
   
   <PropertyGroup>
-    <DataFile>$(BuildDir)\Dummy.sln</DataFile>
-    <ExpectedResultFile>$(BuildDir)\ExpectedResult.sln</ExpectedResultFile>
-    <ActualResultFile>$(TargetDir)\ActualResult.sln</ActualResultFile>
+    <DataFile>$(Test-FixtureDir)\Dummy.sln</DataFile>
+    <ExpectedResultFile>$(Test-FixtureDir)\ExpectedResult.sln</ExpectedResultFile>
+    <ActualResultFile>$(Test-ResultDir)\ActualResult.sln</ActualResultFile>
   </PropertyGroup>
   
-  <Target Name="CleanSolutionFile" DependsOnTargets="
+  <Target Name="Test" DependsOnTargets="
       CleanSolutionFile-With-DestinationFiles;
       CleanSolutionFile-Without-DestinationFiles">
-    <Message Text="CleanSolutionFile successful." />
   </Target>
   
   <Target Name="CleanSolutionFile-With-DestinationFiles">
@@ -34,10 +33,10 @@
   
   <Target Name="CleanSolutionFile-Without-DestinationFiles">
     <PropertyGroup>
-      <OverwriteResultFile>$(TargetDir)\Dummy.sln</OverwriteResultFile>
+      <OverwriteResultFile>$(Test-ResultDir)\Dummy.sln</OverwriteResultFile>
     </PropertyGroup>
-  
-    <Copy SourceFiles="$(DataFile)" DestinationFolder="$(TargetDir)" />
+    
+    <Copy SourceFiles="$(DataFile)" DestinationFolder="$(Test-ResultDir)" />
     <CleanSolutionFile Files="$(OverwriteResultFile)"
       ForceOverwrite="True" ProjectNamePatterns="\.Tests$" ItemPatterns="TestBase.cs$" />
     

@@ -1,20 +1,23 @@
-<?xml version="1.0"?>
-<Project ToolsVersion="4.0" DefaultTargets="ExecuteT4" InitialTargets="_CleanDummy"
-    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildProjectDirectory)\..\Common.props" />
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildProjectDirectory)\..\Test-Zealib.Build.props" />
   
   <PropertyGroup>
-    <ProjectHookBeforeFile>$(BuildDir)\ProjectHook.Before.xml</ProjectHookBeforeFile>
-    <ProjectHookAfterFile>$(BuildDir)\ProjectHook.After.xml</ProjectHookAfterFile>
-    <DummyTemplateFile>$(BuildDir)\Dummy.tt</DummyTemplateFile>
-    <DummySourceFile>$(BuildDir)\Dummy.cs</DummySourceFile>
+    <ProjectHookBeforeFile>$(Test-FixtureDir)\ProjectHook.Before.xml</ProjectHookBeforeFile>
+    <ProjectHookAfterFile>$(Test-FixtureDir)\ProjectHook.After.xml</ProjectHookAfterFile>
+    <DummyTemplateFile>$(Test-FixtureDir)\Dummy.tt</DummyTemplateFile>
+    <DummySourceFile>$(Test-FixtureDir)\Dummy.cs</DummySourceFile>
   </PropertyGroup>
   
-  <Target Name="ExecuteT4">
+  <Target Name="_CleanDummy" BeforeTargets="Test">
+    <Delete Files="$(DummySourceFile)" />
+  </Target>
+  
+  <Target Name="Test">
     <ItemGroup>
       <ProjectToBuild Include="$(HelloWorldProjectFile)">
         <Properties>
-          OutDir=$(BinDir);
+          OutDir=$(Test-BinDir);
           CustomBeforeMicrosoftCommonTargets=$(ProjectHookBeforeFile);
           CustomAfterMicrosoftCommonTargets=$(ProjectHookAfterFile);
           DummyTemplateFile=$(DummyTemplateFile);
@@ -28,13 +31,8 @@
     <MSBuild Projects="@(ProjectToBuild)" />
     
     <!-- Verify -->
-    <RegisterAssemblyResolvePath BinPath="$(BinDir)" />
+    <RegisterAssemblyResolvePath BinPath="$(Test-BinDir)" />
     <RunDummy />
-    <Message Text="ExecuteT4 successful." />
-  </Target>
-  
-  <Target Name="_CleanDummy">
-    <Delete Files="$(DummySourceFile)" />
   </Target>
   
   <UsingTask

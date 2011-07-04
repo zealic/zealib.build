@@ -1,18 +1,18 @@
-<?xml version="1.0"?>
-<Project ToolsVersion="4.0" DefaultTargets="ProcessFile-GZip" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildProjectDirectory)\..\Common.props" />
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildProjectDirectory)\..\Test-Zealib.Build.props" />
   
   <PropertyGroup>
-    <DataFile>$(BuildDir)\Data.txt</DataFile>
-    <ActualOutputFile>$(TargetDir)\ActualResult.gz</ActualOutputFile>
-    <ActualResultFile>$(TargetDir)\ActualResult.txt</ActualResultFile>
+    <DataFile>$(Test-FixtureDir)\Data.txt</DataFile>
+    <ActualOutputFile>$(Test-ResultDir)\ActualResult.gz</ActualOutputFile>
+    <ActualResultFile>$(Test-ResultDir)\ActualResult.txt</ActualResultFile>
   </PropertyGroup>
   
   <ItemGroup>
     <ProcessPipelines Include="GZip" />
   </ItemGroup>
   
-  <Target Name="ProcessFile-GZip">
+  <Target Name="Test">
     <ProcessFile IsEncode="True" Pipelines="@(ProcessPipelines)" 
       InputFile="$(DataFile)" OutputFile="$(ActualOutputFile)" />
     
@@ -31,7 +31,5 @@
     
     <Message Text="ActualChecksum=$(ActualChecksum), ExpectedChecksum=$(ExpectedChecksum)" />
     <Error Condition="'$(ActualChecksum)' != '$(ExpectedChecksum)'" Code="1" />
-    
-    <Message Text="ProcessFile-GZip successful." />
   </Target>
 </Project>
