@@ -5,6 +5,7 @@
     <ZealibBuild-CodePath>$(ZealibBuildPath)\Common\Code\</ZealibBuild-CodePath>
     <!-- Code files -->
     <ZealibBuild-CodeFile-CleanSolutionFile>$(ZealibBuild-CodePath)\CleanSolutionFile.cs</ZealibBuild-CodeFile-CleanSolutionFile>
+    <ZealibBuild-CodeFile-FindCommand>$(ZealibBuild-CodePath)\FindCommand.cs</ZealibBuild-CodeFile-FindCommand>
     <!-- Code contents -->
     <ZealibBuild-Code-CleanSolutionFile>$([MSBuild]::Unescape($(ZealibBuild-Code-CleanSolutionFile)))</ZealibBuild-Code-CleanSolutionFile>
     <ZealibBuild-Code-ProcessFile>$([System.IO.File]::ReadAllText($(ZealibBuild-CodePath)\ProcessFile.cs))</ZealibBuild-Code-ProcessFile>
@@ -22,7 +23,7 @@
   <UsingTask
       TaskName="ProcessFile"
       TaskFactory="CodeTaskFactory"
-      AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll" >
+      AssemblyFile="$(MSBuildTasks-Assembly)" >
     <ParameterGroup>
       <InputFile ParameterType="System.String" Required="True" />
       <OutputFile ParameterType="System.String" Required="True" />
@@ -42,7 +43,7 @@ $(ZealibBuild-Code-Base64Stream)
   <UsingTask
       TaskName="CleanSolutionFile"
       TaskFactory="CodeTaskFactory"
-      AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll" >
+      AssemblyFile="$(MSBuildTasks-Assembly)" >
     <ParameterGroup>
       <Files ParameterType="System.String[]" Required="True" />
       <DestinationFiles ParameterType="System.String[]" Output="True" />
@@ -52,6 +53,25 @@ $(ZealibBuild-Code-Base64Stream)
     </ParameterGroup>
     <Task>
       <Code Source="$(ZealibBuild-CodeFile-CleanSolutionFile)" Language="cs" />
+    </Task>
+  </UsingTask>
+  
+  <UsingTask
+      TaskName="FindCommand"
+      TaskFactory="CodeTaskFactory"
+      AssemblyFile="$(MSBuildTasks-Assembly)" >
+    <ParameterGroup>
+      <Name ParameterType="System.String" Required="True" />
+      <Paths ParameterType="System.String[]" />
+      <PathExtensions ParameterType="System.String[]" />
+      <NoResultFailure ParameterType="System.Boolean" />
+      <HasResult ParameterType="System.Boolean" Output="True" />
+      <FirstResult ParameterType="Microsoft.Build.Framework.ITaskItem" Output="True" />
+      <LastResult ParameterType="Microsoft.Build.Framework.ITaskItem" Output="True" />
+      <Resulst ParameterType="Microsoft.Build.Framework.ITaskItem[]" Output="True" />
+    </ParameterGroup>
+    <Task>
+      <Code Source="$(ZealibBuild-CodeFile-FindCommand)" Language="cs" />
     </Task>
   </UsingTask>
 </Project>
