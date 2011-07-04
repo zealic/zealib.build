@@ -12,7 +12,7 @@
     <Test-FixtureDir>$(MSBuildProjectDirectory)\$(TestName)\</Test-FixtureDir>
     <Test-TargetDir>$(Test-BaseDir)\target\</Test-TargetDir>
     <Test-ResultDir>$(Test-TargetDir)\$([System.IO.Directory]::GetParent($(MSBuildProjectFullPath)).Name)\$(TestName)\</Test-ResultDir>
-    <Test-SrcDir>$(Test-BaseDir)\src</Test-SrcDir>
+    <Test-SrcDir>$(Test-FixtureDir)\src</Test-SrcDir>
     <Test-BinDir>$(Test-ResultDir)\bin\</Test-BinDir>
   </PropertyGroup>
   

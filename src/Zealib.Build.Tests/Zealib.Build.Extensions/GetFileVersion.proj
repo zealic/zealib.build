@@ -5,9 +5,8 @@
   <PropertyGroup>
     <FactAssembly>$(Test-BinDir)\FactAssembly.dll</FactAssembly>
   </PropertyGroup>
-  
   <ItemGroup>
-    <FactSources Include="$(Test-FixtureDir)\*.cs" />
+    <FactSources Include="$(Test-SrcDir)\*.cs" />
   </ItemGroup>
   
   <Target Name="MakeAssembly">

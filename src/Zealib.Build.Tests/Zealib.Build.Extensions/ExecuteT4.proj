@@ -7,6 +7,8 @@
     <ProjectHookAfterFile>$(Test-FixtureDir)\ProjectHook.After.xml</ProjectHookAfterFile>
     <DummyTemplateFile>$(Test-FixtureDir)\Dummy.tt</DummyTemplateFile>
     <DummySourceFile>$(Test-FixtureDir)\Dummy.cs</DummySourceFile>
+    <HelloWorldProjectFile>$(Test-SrcDir)\HelloWorld.csproj</HelloWorldProjectFile>
+    <HelloWorldAssemblyFile>$(Test-BinDir)\HelloWorld.dll</HelloWorldAssemblyFile>
   </PropertyGroup>
   
   <Target Name="_CleanDummy" BeforeTargets="Test">
@@ -17,7 +19,8 @@
     <ItemGroup>
       <ProjectToBuild Include="$(HelloWorldProjectFile)">
         <Properties>
-          OutDir=$(Test-BinDir);
+          OutputPath=$(Test-BinDir);
+          BaseIntermediateOutputPath=$(Test-BinDir)\obj\;
           CustomBeforeMicrosoftCommonTargets=$(ProjectHookBeforeFile);
           CustomAfterMicrosoftCommonTargets=$(ProjectHookAfterFile);
           DummyTemplateFile=$(DummyTemplateFile);
