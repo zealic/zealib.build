@@ -8,21 +8,22 @@
   </PropertyGroup>
   
   <Target Name="Test">
-    <MyTask />
+    <MyTask ParameterValue="Hello Boy!" />
   </Target>
   
   <UsingTask
       TaskName="MyTask"
       TaskFactory="CodeTaskFactory"
       AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll" >
+    <ParameterGroup>
+      <ParameterValue ParameterType="System.String" Required="True" />
+    </ParameterGroup>
     <Task>
       <Using Namespace="System" />
-      <Code Type="Method" Language="cs">
+      <Code Type="Fragment" Language="cs">
       <![CDATA[
-public override bool Execute() {
-  Log.LogMessage("$(CustomName)");
-  return $(CustomResult);
-}]]>
+Log.LogMessage("CustomName = {0}, ParameterValue = {1}", "$(CustomName)", ParameterValue);
+]]>
       </Code>
     </Task>
   </UsingTask>
