@@ -11,6 +11,5 @@
   
   <Target Name="Test">
     <Error Condition="$(HasPrepared) != True" Text="Build not prepared." Code="1" />
-    <Message Text="11" />
   </Target>
 </Project>
