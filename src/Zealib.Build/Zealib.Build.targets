@@ -20,18 +20,13 @@
     <TargetDir>$(BaseDir)\target</TargetDir>
   </PropertyGroup>
   
-  <PropertyGroup>
-    <BuildDependsOn>
-      BeforeBuild;
-      CoreBuild;
-      AfterBuild
-    </BuildDependsOn>
-  </PropertyGroup>
-  <Target
-    Name="Build"
-    DependsOnTargets="$(BuildDependsOn)" />
-  
   <Target Name="BeforeBuild" />
   <Target Name="AfterBuild" />
-  <Target Name="CoreBuild" />
+  
+  <Target Name="_BeforeBuild" DependsOnTargets="BeforeBuild" BeforeTargets="Build" />
+  <Target Name="_AfterBuild" DependsOnTargets="AfterBuild" AfterTargets="Build" />
+  
+  <Target Name="Build">
+    <Error Code="10001" Text="You must redefine target 'Build'." />
+  </Target>
 </Project>
