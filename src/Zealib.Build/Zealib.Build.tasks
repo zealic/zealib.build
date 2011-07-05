@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildTasks-Assembly Condition="'$(MSBuildTasks-Assembly)' == ''">$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll</MSBuildTasks-Assembly>
+  </PropertyGroup>
+  
+  <PropertyGroup>
+    <ZealibBuildPath Condition="'$(ZealibBuildPath)' == ''">$(MSBuildExtensionsPath)\Zealib.Build</ZealibBuildPath>
+  </PropertyGroup>
+  
+  <PropertyGroup>
+    <ZealibBuild-TasksAssembly Condition="'$(ZealibBuild-TasksAssembly)' != ''">$(ZealibBuildPath)\Zealib.Build.Tasks.dll</ZealibBuild-TasksAssembly>
+  </PropertyGroup>
+  
+  <UsingTask TaskName="ProcessFile" AssemblyFile="$(ZealibBuild-TasksAssembly)" />
+  <UsingTask TaskName="CleanSolutionFile" AssemblyFile="$(ZealibBuild-TasksAssembly)" />
+  <UsingTask TaskName="FindCommand" AssemblyFile="$(ZealibBuild-TasksAssembly)" />
+</Project>

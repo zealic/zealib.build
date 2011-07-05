@@ -2,13 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 
-namespace Zealib.Build.Common.Tasks
+// ReSharper disable InconsistentNaming
+namespace Zealib.Build.Tasks
 {
     public class CleanSolutionFile : Task
     {
@@ -67,18 +68,24 @@ namespace Zealib.Build.Common.Tasks
                     + "You can use ForceOverwrite to force overwrite file.", destFile));
 
             var sln = new SolutionInfo(slnFile);
-            foreach (var pattern in ProjectNamePatterns)
+            foreach (var e in ProjectNamePatterns)
+            {
+                var pattern = e;
                 sln.RemoveProjects(p => new Regex(pattern).IsMatch(p.ProjectName));
-            foreach (var pattern in ItemPatterns)
+            }
+            foreach (var e in ItemPatterns)
+            {
+                var pattern = e;
                 sln.RemoveSolutionItems(m => new Regex(pattern).IsMatch(m));
+            }
             File.WriteAllText(destFile, sln.ToString(), new UTF8Encoding(true, true));
         }
     }
 }
 
-namespace Zealib.Build.Common
+namespace Zealib.Build
 {
-    public class ProjectInfo
+    internal class ProjectInfo
     {
         private const string REGEX_PATTERN =
           "^Project\\(" +
@@ -129,9 +136,9 @@ namespace Zealib.Build.Common
 
     }
 
-    public class SolutionInfo
+    internal class SolutionInfo
     {
-        private List<object> m_Items = new List<object>();
+        private readonly List<object> m_Items = new List<object>();
 
         public SolutionInfo(string file)
         {
@@ -164,7 +171,7 @@ namespace Zealib.Build.Common
                     else if (solutionItems != null)
                         solutionItems.Add(line.Trim());
                 }
-                else if (info == null)
+                else
                 {
                     m_Items.Add(line);
                 }
@@ -181,12 +188,8 @@ namespace Zealib.Build.Common
                 if (condition(info))
                 {
                     removeList.Add(info);
-                    foreach (var str in m_Items)
-                    {
-                        var line = str as string;
-                        if (line == null) continue;
-                        if (line.Contains(info.ProjectGuid)) removeList.Add(line);
-                    }
+                    removeList.AddRange(m_Items.OfType<string>()
+                        .Where(line => line.Contains(info.ProjectGuid)));
                 }
             }
 
@@ -199,11 +202,7 @@ namespace Zealib.Build.Common
             {
                 var info = item as ProjectInfo;
                 if (info == null || info.SolutionItems == null) continue;
-                var removeList = new List<string>();
-                foreach (var si in info.SolutionItems)
-                {
-                    if (condition(si)) removeList.Add(si);
-                }
+                var removeList = info.SolutionItems.Where(condition).ToList();
 
                 foreach (var si in removeList) info.SolutionItems.Remove(si);
             }

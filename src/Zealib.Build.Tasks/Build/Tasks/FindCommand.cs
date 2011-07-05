@@ -6,7 +6,7 @@ using System.Linq;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 
-namespace Zealib.Build.Common.Tasks
+namespace Zealib.Build.Tasks
 {
     public class FindCommand : Task
     {

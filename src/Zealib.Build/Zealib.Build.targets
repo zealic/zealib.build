@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <ZealibBuildPath Condition="'$(ZealibBuildPath)' == ''">$(MSBuildExtensionsPath)\Zealib.Build</ZealibBuildPath>
-  </PropertyGroup>
-  
-  <PropertyGroup>
     <MSBuildTasks-Assembly Condition="'$(MSBuildTasks-Assembly)' == ''">$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll</MSBuildTasks-Assembly>
   </PropertyGroup>
   
-  <Import Project="$(ZealibBuildPath)\Zealib.Build.Common.tasks" />
+  <PropertyGroup>
+    <ZealibBuildPath Condition="'$(ZealibBuildPath)' == ''">$(MSBuildExtensionsPath)\Zealib.Build</ZealibBuildPath>
+  </PropertyGroup>
+  
+  <Import Project="$(ZealibBuildPath)\Zealib.Build.tasks" />
   <Import Project="$(ZealibBuildPath)\Zealib.Build.Extensions.tasks" />
   
   <PropertyGroup>
