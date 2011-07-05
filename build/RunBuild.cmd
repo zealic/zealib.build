@@ -22,7 +22,7 @@ IF NOT "%TAG_NAME%" == "" (
 )
 
 SET MSBUILD_TOOL=%WINDIR%\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe
-"%MSBUILD_TOOL%" /nologo /p:VersionRevision=%COMMIT_COUNT% /p:VersionIdentity=%COMMIT_HASH% /p:ReleaseName=%RELEASE_NAME% Build.build %* 
+"%MSBUILD_TOOL%" /nologo /p:VersionRevision=%COMMIT_COUNT% /p:VersionIdentity=%COMMIT_HASH% Build.build %* 
 goto :eof
 
 

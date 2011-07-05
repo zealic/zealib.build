@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <VersionMajor Condition="'$(VersionMajor)' == ''">2</VersionMajor>
+    <VersionMinor Condition="'$(VersionMinor)' == ''">0</VersionMinor>
+    <VersionBuild Condition="'$(VersionBuild)' == ''">0</VersionBuild>
+    <VersionRevision Condition="'$(VersionRevision)' == ''">0</VersionRevision>
+  </PropertyGroup>
+</Project>

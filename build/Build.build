@@ -1,53 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003"
+    ToolsVersion="4.0"
+    InitialTargets="CleanUp;GenerateSolution">
   <PropertyGroup>
     <ZealibBuildPath Condition="'$(ZealibBuildPath)' == ''">$(MSBuildProjectDirectory)\..\src\Zealib.Build</ZealibBuildPath>
   </PropertyGroup>
   <Import Project="$(ZealibBuildPath)\Zealib.Build.targets" />
+  <Import Project="Application.props" />
   
   <PropertyGroup>
     <ProjectName>Zealib.Build</ProjectName>
-    <ReleaseName>v1.0</ReleaseName>
-    <OutDir>$(TargetDir)\bin\</OutDir>
-    <ContentDir>$(SrcDir)\$(ProjectName)</ContentDir>
+    <Content-SourceDir>$(SrcDir)\$(ProjectName)\</Content-SourceDir>
+    <Content-TargetDir>$(TargetDir)\bin\</Content-TargetDir>
   </PropertyGroup>
   
   <PropertyGroup>
     <BuildDate Condition="'$(BuildDate)' == ''">$([System.DateTime]::Now.ToString("yyyy-MM-dd HH:mm:ss zzz"))</BuildDate>
-    <VersionRevision Condition="'$(VersionRevision)' == ''">0</VersionRevision>
-    <VersionIdentity Condition="'$(VersionIdentity)' == ''"></VersionIdentity>
-    <ReleaseName Condition="'$(ReleaseName)' == ''">DEV</ReleaseName>
-    <FullVersion>$(ReleaseName).$(VersionRevision).0</FullVersion>
-    <FullVersion Condition="'$(ReleaseName)' == 'DEV'">$(ReleaseName)-$(VersionRevision)-$(VersionIdentity)</FullVersion>
+    <FullVersion>$(VersionMajor).$(VersionMinor).$(VersionBuild).$(VersionRevision)</FullVersion>
     <ArchiveFile>$(TargetDir)\$(ProjectName)-$(FullVersion).zip</ArchiveFile>
   </PropertyGroup>
   
-  <ItemGroup>
-    <ArchiveFiles Include="$(ContentDir)\**" />
-  </ItemGroup>
+  <PropertyGroup>
+    <SolutionFile>$(MSBuildProjectDirectory)\..\src\$(ProjectName).sln</SolutionFile>
+    <ZealibBuild-TasksAssembly>$(Content-TargetDir)\Zealib.Build.Tasks.dll</ZealibBuild-TasksAssembly>
+  </PropertyGroup>
   
-  <Target Name="BeforeBuild" DependsOnTargets="
-      CleanUp">
+  <Target Name="CleanUp">
+    <RemoveDir Directories="$(Content-TargetDir)" />
+  </Target>
+  
+  <Target Name="GenerateSolution" DependsOnTargets="GenerateVersion">
+    <MSBuild Projects="$(SolutionFile)" Properties="
+      Configuration=Release;
+      OutputPath=$(Content-TargetDir);" />
+  </Target>
+  
+  <Target Name="GenerateVersion">
+    <PropertyGroup>
+      <FullVersion>$(VersionMajor).$(VersionMinor).$(VersionBuild).$(VersionRevision)</FullVersion>
+    </PropertyGroup>
   </Target>
   
   <Target Name="CoreBuild">
     <Message Text="Starting build..." />
     <Message Text="VersionRevision = $(VersionRevision)" Condition="'$(VersionRevision)' != '0'"/>
     <Message Text="VersionIdentity = $(VersionIdentity)" Condition="'$(VersionIdentity)' != ''"/>
-    <Message Text="ReleaseName = $(ReleaseName)" Condition="'$(ReleaseName)' != ''"/>
+    <Message Text="VersionType = $(VersionType)" Condition="'$(VersionType)' != ''"/>
     
+    <ItemGroup>
+      <SourceFiles Include="$(Content-SourceDir)\**" />
+      <TargetFiles Include="@(SourceFiles -> '$(Content-TargetDir)%(RecursiveDir)%(FileName)%(Extension)')" />
+    </ItemGroup>
+    <Copy SourceFiles="@(SourceFiles)" DestinationFiles="@(TargetFiles)" />
+    
+    <ItemGroup>
+      <ArchiveFiles Include="$(Content-TargetDir)\**" />
+    </ItemGroup>
     <Zip ZipFileName="$(ArchiveFile)"
       Files="@(ArchiveFiles)" 
-      WorkingDirectory="$(ContentDir)"
+      WorkingDirectory="$(Content-TargetDir)"
       Comment="$(VersionIdentity)" />
+    
     <Message Text="Build successful!" />
-  </Target>
-  
-  <Target Name="CleanUp">
-    <MakeDir Directories="$(OutDir)" />
-    <ItemGroup>
-      <CleanFiles Include="$(OutDir)\*" />
-    </ItemGroup>
-    <Delete Condition="Exists($(OutDir))" Files="@(CleanFiles)" />
   </Target>
 </Project>
