@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildProjectDirectory)\..\Test-Zealib.Build.props" />
+  
+  <ItemGroup>
+    <CodeFiles Include="$(Test-ResultDir)\MembersCode-Constants.cs">
+      <Verify-ExpectedFile>$(Test-FixtureDir)%(FileName)%(Extension)</Verify-ExpectedFile>
+      <Code-ConditionalConstants>UNIT_TEST</Code-ConditionalConstants>
+      <Code-ClassModifiers>public;static</Code-ClassModifiers>
+      <Code-ClassName>Constants</Code-ClassName>
+      <Code-ClassMemberType>Constant</Code-ClassMemberType>
+      <Hello>World</Hello>
+      <Name>Harry Poter</Name>
+    </CodeFiles>
+    <CodeFiles Include="$(Test-ResultDir)\MembersCode-Field.cs">
+      <Verify-ExpectedFile>$(Test-FixtureDir)%(FileName)%(Extension)</Verify-ExpectedFile>
+      <Code-ConditionalConstants>AUTO_BUILD;SUPPORTED_MONO</Code-ConditionalConstants>
+      <Code-ClassName>Settings</Code-ClassName>
+      <Code-ClassMemberType>Field</Code-ClassMemberType>
+      <Hello>World</Hello>
+      <Name>Harry Poter</Name>
+    </CodeFiles>
+    <CodeFiles Include="$(Test-ResultDir)\MembersCode-Property.cs">
+      <Verify-ExpectedFile>$(Test-FixtureDir)%(FileName)%(Extension)</Verify-ExpectedFile>
+      <Code-ClassModifiers>public;static</Code-ClassModifiers>
+      <Code-ClassName>Properties</Code-ClassName>
+      <Code-ClassMemberType>Property</Code-ClassMemberType>
+      <Hello>World</Hello>
+      <Name>Harry Poter</Name>
+    </CodeFiles>
+  </ItemGroup>
+  
+  <Target Name="Test">
+  <Message  Text="%(CodeFiles.Verify-ExpectedFile)" />
+    <GenerateMembersCode CodeFiles="@(CodeFiles)" />
+    
+    <!-- Verify -->
+    <File TaskAction="GetChecksum"
+      Path="%(CodeFiles.Verify-ExpectedFile)">
+      <Output PropertyName="ExpectedChecksum-%(Code-ClassMemberType)" TaskParameter="Checksum" />
+    </File>
+    <File TaskAction="GetChecksum"
+      Path="%(CodeFiles.Identity)">
+      <Output PropertyName="ActualChecksum-%(Code-ClassMemberType)" TaskParameter="Checksum" />
+    </File>
+    
+    <Message Text="ActualChecksum-%(CodeFiles.Code-ClassMemberType)=$(ActualChecksum-%(Code-ClassMemberType)), ExpectedChecksum-%(Code-ClassMemberType)=$(ExpectedChecksum-%(Code-ClassMemberType))" />
+    <Error Text="File '%(CodeFiles.Identity)' checksum is unexpected."
+        Condition="'$(ActualChecksum-%(Code-ClassMemberType))' != '$(ExpectedChecksum-%(Code-ClassMemberType))'" Code="1" />
+  </Target>
+</Project>
