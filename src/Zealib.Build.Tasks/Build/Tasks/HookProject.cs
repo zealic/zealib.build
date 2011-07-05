@@ -88,39 +88,7 @@ namespace Zealib.Build.Tasks
             sb.AppendFormat(";HookProject-SourceFiles={0}", Escape(string.Join(";", SourceFiles)));
             item.SetMetadata("Properties", sb.ToString());
 
-            Log.LogMessage(sb.ToString());
             return item;
-        }
-
-        private bool GenerateAttachClassCodeFile(ITaskItem atttachClass, out string file)
-        {
-            file = null;
-            if (atttachClass == null) return false;
-            var className = atttachClass.ItemSpec;
-            if (string.IsNullOrEmpty(className) ||
-                !Regex.IsMatch(className, @"[a-zA-Z][a-zA-Z0-9_]*"))
-            {
-                Log.LogError("Invalid attach class name \"{0}\".", className);
-                return false;
-            }
-
-            file = Path.GetTempFileName();
-            using (var writer = File.CreateText(file))
-            {
-                var dict = atttachClass.CloneCustomMetadata();
-                writer.WriteLine("#if HOOK_PROJECT");
-                writer.WriteLine(string.Format("partial class {0}", className));
-                writer.WriteLine("{");
-                foreach (DictionaryEntry e in dict)
-                {
-                    writer.WriteLine("    public const string {0} = @\"{1}\";", e.Key, e.Value);
-                }
-                writer.WriteLine("}");
-                writer.WriteLine("#endif");
-            }
-            Log.LogMessage("Attach properties source file has generated into \"{0}\".", AttachCodeFile);
-
-            return true;
         }
 
         private bool InitializeDefineConstants()
@@ -137,17 +105,6 @@ namespace Zealib.Build.Tasks
         private bool InitializeSourceFiles()
         {
             if (SourceFiles == null) SourceFiles = new string[0];
-            var files = new List<string>(SourceFiles);
-            foreach (var attachClass in AttachClasses)
-            {
-                string file;
-                if (GenerateAttachClassCodeFile(attachClass, out file))
-                {
-                    files.Add(file);
-                }
-            }
-            SourceFiles = files.ToArray();
-
             bool haveError = false;
             foreach (var file in SourceFiles.Where(file => !File.Exists(file)))
             {

@@ -34,7 +34,12 @@
     <PropertyGroup>
       <FunctionValue>$([System.String]::Format('Hello {0}.', 'WTF'))</FunctionValue>
     </PropertyGroup>
+    <PropertyGroup>
+      <NestedFunctionValue>Hello WTF.</NestedFunctionValue>
+      <NestedFunctionValue>$([System.String]::Format('Nested {0}', $(NestedFunctionValue)))</NestedFunctionValue>
+    </PropertyGroup>
     <Error Condition="'$(FunctionValue)' != 'Hello WTF.'" Code="2" />
+    <Error Condition="'$(NestedFunctionValue)' != 'Nested Hello WTF.'" Code="2" />
     
     <Message Text="Spec-PropertyFromFunction PASS." />
   </Target>

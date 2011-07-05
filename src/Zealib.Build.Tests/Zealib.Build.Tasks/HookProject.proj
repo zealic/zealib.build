@@ -4,50 +4,66 @@
   
   <PropertyGroup>
     <DummySourceFile>$(Test-FixtureDir)\Dummy.cs</DummySourceFile>
-    <HelloWorldProjectFile>$(Test-SrcDir)\HelloWorld.csproj</HelloWorldProjectFile>
-    <HelloWorldAssemblyFile>$(Test-BinDir)\HelloWorld.dll</HelloWorldAssemblyFile>
+    <HelloHookProjectFile>$(Test-SrcDir)\HelloHook.csproj</HelloHookProjectFile>
+    <HelloHookAssemblyFile>$(Test-BinDir)\HelloHook.dll</HelloHookAssemblyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ThisAssemblyCodeFile>$(Test-ResultDir)\ThisAssembly.cs</ThisAssemblyCodeFile>
+    <ThisAssemblyCode>
+#if HOOK_PROJECT
+public class ThisAssembly
+{
+    public const string Version = "4.5.7.900";
+}
+#endif
+    </ThisAssemblyCode>
+    <ThisAssemblyCode>$([MSBuild]::Escape('$(ThisAssemblyCode)'))</ThisAssemblyCode>
   </PropertyGroup>
   
   <Target Name="MakeAssembly">
+    <WriteLinesToFile File="$(ThisAssemblyCodeFile)" Lines="$(ThisAssemblyCode)" />
     <ItemGroup>
-      <ProjectToBuild Include="$(HelloWorldProjectFile)">
+      <ProjectToBuild Include="$(HelloHookProjectFile)">
         <Properties>
           OutputPath=$(Test-BinDir);
           BaseIntermediateOutputPath=$(Test-BinDir)\obj\
         </Properties>
       </ProjectToBuild>
-      <AttachClasses Include="ThisAssembly">
-        <Version>1.0.0.0</Version>
-      </AttachClasses>
     </ItemGroup>
     
-    <HookProject Projects="@(ProjectToBuild)" SourceFiles="$(DummySourceFile)" AttachClasses="@(AttachClasses)">
+    <HookProject Projects="@(ProjectToBuild)"
+        SourceFiles="$(DummySourceFile);$(ThisAssemblyCodeFile)">
       <Output TaskParameter="HookedProjects" ItemName="HookedProjects" />
     </HookProject>
     
     <MSBuild Projects="@(HookedProjects)" />
   </Target>
   
-  <Target Name="Build" DependsOnTargets="MakeAssembly">
+  <Target Name="Test" DependsOnTargets="MakeAssembly">
     <!-- Verify -->
     <RegisterAssemblyResolvePath BinPath="$(Test-BinDir)" />
-    <RunDummy />
-  </Target>
-  
-  <Target Name="Test" DependsOnTargets="Build">
+    <RunDummy>
+      <Output TaskParameter="Version" PropertyName="OutputVersion" />
+    </RunDummy>
+    <Error Condition="'$(OutputVersion)' != '4.5.7.900'" Code="1" 
+        Text="OutputVersion '$(OutputVersion)' not matched value '4.5.7.900'." />
   </Target>
   
   <UsingTask
       TaskName="RunDummy"
       TaskFactory="CodeTaskFactory"
-      AssemblyFile="$(MSBuildTasks-Assembly)" >
+      AssemblyFile="$(MSBuildTasks-Assembly)">
+    <ParameterGroup>
+      <Version Output="True" />
+    </ParameterGroup>
     <Task>
-      <Reference Include="$(HelloWorldAssemblyFile)" />
+      <Reference Include="$(HelloHookAssemblyFile)" />
       <Using Namespace="System" />
       <Code Type="Method" Language="cs">
       <![CDATA[
 public override bool Execute() {
   Dummy.ShowVersion();
+  Version = ThisAssembly.Version;
   return true;
 }]]>
       </Code>

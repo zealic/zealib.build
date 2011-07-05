@@ -8,8 +8,8 @@
     <ProjectGuid>{4C7D82C2-F711-4765-9D9F-CFA89406C4A4}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>HelloWorld</RootNamespace>
-    <AssemblyName>HelloWorld</AssemblyName>
+    <RootNamespace>HelloHook</RootNamespace>
+    <AssemblyName>HelloHook</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
