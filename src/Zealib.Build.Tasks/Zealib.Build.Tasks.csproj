@@ -43,7 +43,7 @@
     <Compile Include="Build\Tasks\GenerateMembersCode.cs" />
     <Compile Include="Build\Tasks\HookProject.cs" />
     <Compile Include="IO\Base64Stream.cs" />
-    <Compile Include="Build\Tasks\CleanSolutionFile.cs" />
+    <Compile Include="Build\Tasks\PruneSolution.cs" />
     <Compile Include="Build\Tasks\FindCommand.cs" />
     <Compile Include="Build\Tasks\ProcessFile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -9,12 +9,12 @@
   </PropertyGroup>
   
   <Target Name="Test" DependsOnTargets="
-      CleanSolutionFile-With-DestinationFiles;
-      CleanSolutionFile-Without-DestinationFiles">
+      PruneSolution-With-DestinationFiles;
+      PruneSolution-Without-DestinationFiles">
   </Target>
   
-  <Target Name="CleanSolutionFile-With-DestinationFiles">
-    <CleanSolutionFile Files="$(DataFile)" DestinationFiles="$(ActualResultFile)"
+  <Target Name="PruneSolution-With-DestinationFiles">
+    <PruneSolution Files="$(DataFile)" DestinationFiles="$(ActualResultFile)"
       ProjectNamePatterns="\.Tests$" ItemPatterns="TestBase.cs$" />
     
     <!-- Verify -->
@@ -31,13 +31,13 @@
     <Error Condition="'$(ActualChecksum)' != '$(ExpectedChecksum)'" Code="1" />
   </Target>
   
-  <Target Name="CleanSolutionFile-Without-DestinationFiles">
+  <Target Name="PruneSolution-Without-DestinationFiles">
     <PropertyGroup>
       <OverwriteResultFile>$(Test-ResultDir)\Dummy.sln</OverwriteResultFile>
     </PropertyGroup>
     
     <Copy SourceFiles="$(DataFile)" DestinationFolder="$(Test-ResultDir)" />
-    <CleanSolutionFile Files="$(OverwriteResultFile)"
+    <PruneSolution Files="$(OverwriteResultFile)"
       ForceOverwrite="True" ProjectNamePatterns="\.Tests$" ItemPatterns="TestBase.cs$" />
     
     <!--- Verify -->

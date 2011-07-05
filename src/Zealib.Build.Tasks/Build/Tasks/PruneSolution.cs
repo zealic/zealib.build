@@ -11,7 +11,7 @@ using Microsoft.Build.Utilities;
 // ReSharper disable InconsistentNaming
 namespace Zealib.Build.Tasks
 {
-    public class CleanSolutionFile : Task
+    public class PruneSolution : Task
     {
         [Required]
         public string[] Files { get; set; }
