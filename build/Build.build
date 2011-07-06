@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003"
     ToolsVersion="4.0"
-    InitialTargets="CleanUp;GenerateSolution">
+    InitialTargets="CleanUp;Bootstrapping">
   <PropertyGroup>
     <ZealibBuildPath Condition="'$(ZealibBuildPath)' == ''">$(MSBuildProjectDirectory)\..\src\Zealib.Build</ZealibBuildPath>
   </PropertyGroup>
   <Import Project="$(ZealibBuildPath)\Zealib.Build.targets" />
   <Import Project="Application.props" />
+  
+  <PropertyGroup>
+    <BootstrappingDir>$(TargetDir)\Bootstrapping\</BootstrappingDir>
+    <ZealibBuild-TasksAssembly>$(BootstrappingDir)\Zealib.Build.Tasks.dll</ZealibBuild-TasksAssembly>
+  </PropertyGroup>
   
   <PropertyGroup>
     <ProjectName>Zealib.Build</ProjectName>
@@ -15,31 +20,64 @@
   </PropertyGroup>
   
   <PropertyGroup>
-    <BuildDate Condition="'$(BuildDate)' == ''">$([System.DateTime]::Now.ToString("yyyy-MM-dd HH:mm:ss zzz"))</BuildDate>
+    <Timestamp>$([System.DateTime]::Now.ToString("yyyy-MM-dd HH:mm:ss zzz"))</Timestamp>
+    <BuildConstants>ENV_PRODUCTION</BuildConstants>
     <FullVersion>$(VersionMajor).$(VersionMinor).$(VersionBuild).$(VersionRevision)</FullVersion>
     <ArchiveFile>$(TargetDir)\$(ProjectName)-$(FullVersion).zip</ArchiveFile>
   </PropertyGroup>
   
-  <PropertyGroup>
-    <SolutionFile>$(MSBuildProjectDirectory)\..\src\$(ProjectName).sln</SolutionFile>
-    <ZealibBuild-TasksAssembly>$(Content-TargetDir)\Zealib.Build.Tasks.dll</ZealibBuild-TasksAssembly>
-  </PropertyGroup>
+  <ItemGroup>
+    <SolutionForBootstrapping Include="$(MSBuildProjectDirectory)\..\src\$(ProjectName).sln">
+      <Properties>
+        Configuration=Release;
+        UseCommonOutputDirectory=True;
+        OutputPath=$(BootstrappingDir)
+      </Properties>
+    </SolutionForBootstrapping>
+    <SolutionForBuild Include="$(MSBuildProjectDirectory)\..\src\$(ProjectName).sln">
+      <Properties>
+        Configuration=Release;
+        UseCommonOutputDirectory=True;
+        OutputPath=$(Content-TargetDir)
+      </Properties>
+    </SolutionForBuild>
+    <AddationalCodeFiles Include="$(TargetDir)\AutoBuild.cs">
+      <Code-ConditionalConstants>$(BuildConstants)</Code-ConditionalConstants>
+      <Code-ClassModifiers>partial</Code-ClassModifiers>
+      <Code-ClassName>ThisAssembly</Code-ClassName>
+      <Code-ClassMemberType>Constant</Code-ClassMemberType>
+      <VersionMajor>$(VersionMajor)</VersionMajor>
+      <VersionMinor>$(VersionMinor)</VersionMinor>
+      <VersionBuild>$(VersionBuild)</VersionBuild>
+      <VersionRevision>$(VersionRevision)</VersionRevision>
+      <VersionIdentity>$(VersionIdentity)</VersionIdentity>
+      <VersionType>$(VersionType)</VersionType>
+      <Timestamp>$(Timestamp)</Timestamp>
+    </AddationalCodeFiles>
+  </ItemGroup>
+  
   
   <Target Name="CleanUp">
     <RemoveDir Directories="$(Content-TargetDir)" />
   </Target>
   
-  <Target Name="GenerateSolution" DependsOnTargets="GenerateVersion">
-    <MSBuild Projects="$(SolutionFile)" Properties="
-      Configuration=Release;
-      OutputPath=$(Content-TargetDir);
-      UseCommonOutputDirectory=True" />
+  <Target Name="Bootstrapping">
+    <MSBuild Projects="@(SolutionForBootstrapping)" />
   </Target>
   
+  
   <Target Name="GenerateVersion">
-    <PropertyGroup>
-      <FullVersion>$(VersionMajor).$(VersionMinor).$(VersionBuild).$(VersionRevision)</FullVersion>
-    </PropertyGroup>
+    <GenerateMembersCode CodeFiles="@(AddationalCodeFiles)" ForceOverwrite="True" />
+  </Target>
+  
+  <Target Name="BuildSolution" BeforeTargets="Build" DependsOnTargets="GenerateVersion">
+    <HookProject Projects="@(SolutionForBuild)"
+        SourceFiles="@(AddationalCodeFiles)"
+        DefineConstants="$(BuildConstants)">
+      <Output TaskParameter="HookedProjects" ItemName="HookedSolutionForBuild" />
+    </HookProject>
+    
+    <MSBuild Projects="@(HookedSolutionForBuild)" />
   </Target>
   
   <Target Name="Build">
@@ -54,6 +92,10 @@
     </ItemGroup>
     <Copy SourceFiles="@(SourceFiles)" DestinationFiles="@(TargetFiles)" />
     
+    <Message Text="Build successful!" />
+  </Target>
+  
+  <Target Name="ArchiveZip" AfterTargets="Build">
     <ItemGroup>
       <ArchiveFiles Include="$(Content-TargetDir)\**" />
     </ItemGroup>
@@ -61,7 +103,5 @@
       Files="@(ArchiveFiles)" 
       WorkingDirectory="$(Content-TargetDir)"
       Comment="$(VersionIdentity)" />
-    
-    <Message Text="Build successful!" />
   </Target>
 </Project>

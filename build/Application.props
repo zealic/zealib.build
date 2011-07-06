@@ -5,5 +5,7 @@
     <VersionMinor Condition="'$(VersionMinor)' == ''">0</VersionMinor>
     <VersionBuild Condition="'$(VersionBuild)' == ''">0</VersionBuild>
     <VersionRevision Condition="'$(VersionRevision)' == ''">0</VersionRevision>
+    <VersionIdentity Condition="'$(VersionIdentity)' == ''">0000000000000000000000000000000000000000</VersionIdentity>
+    <VersionType Condition="'$(VersionType)' == ''">PRODUCTION</VersionType>
   </PropertyGroup>
 </Project>

@@ -62,6 +62,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Properties\ThisAssembly.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\HookProject-After.props" />
