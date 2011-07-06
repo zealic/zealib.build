@@ -15,7 +15,7 @@
   
   <Target Name="Test" DependsOnTargets="MakeAssembly">
     <GetFileVersion TargetFile="$(FactAssembly)">
-      <Output TaskParameter="Version" PropertyName="Version" />
+      <Output TaskParameter="Version" ItemName="Version" />
       <Output TaskParameter="VersionMajor" PropertyName="VersionMajor" />
       <Output TaskParameter="VersionMinor" PropertyName="VersionMinor" />
       <Output TaskParameter="VersionBuild" PropertyName="VersionBuild" />
@@ -23,10 +23,11 @@
     </GetFileVersion>
     
     <!-- Verify -->
-    <Error Condition="'$(Version)' != '3.4.5.6'" Code="1" />
+    <Error Condition="'@(Version)' != '3.4.5.6'" Code="1" />
     <Error Condition="!($(VersionMajor) == 3
       AND $(VersionMinor) == 4
       AND $(VersionBuild) == 5
       AND $(VersionRevision) == 6)" Code="1" />
+    <Error Condition="'%(Version.OriginalFileName)' != 'FactAssembly.dll'" Code="1" />
   </Target>
 </Project>
