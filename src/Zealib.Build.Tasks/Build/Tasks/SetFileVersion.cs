@@ -17,16 +17,19 @@ namespace Zealib.Build.Tasks
 
         public override bool Execute()
         {
+            var versionString = Version.ItemSpec;
             if (!File.Exists(TargetFile))
             {
                 Log.LogError("Target file \"{0}\" dose not exist.", TargetFile);
                 return false;
             }
 
-            var versionResource = new VersionResource();
+            var versionResource = new VersionResource
+            {
+                Language = 0
+            };
             versionResource.LoadFrom(TargetFile);
             var stringInfo = (StringFileInfo)versionResource["StringFileInfo"];
-            var versionString = Version.ItemSpec;
             foreach (DictionaryEntry entry in Version.CloneCustomMetadata())
             {
                 var name = (string)entry.Key;
