@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -9,6 +10,30 @@ namespace Zealib.Build.Tasks
 {
     public class RegisterAssemblyResolvePath : Task
     {
+        private static readonly string BinPathCollectionKey;
+
+        static RegisterAssemblyResolvePath()
+        {
+            BinPathCollectionKey = string.Format("{0}.BinPathSet", typeof(RegisterAssemblyResolvePath).FullName);
+            AppDomain.CurrentDomain.AssemblyResolve += ResolveAssembly;
+        }
+
+        private static Stack<string> BinPathCollection
+        {
+            get
+            {
+                var domain = AppDomain.CurrentDomain;
+                var list = domain.GetData(BinPathCollectionKey) as Stack<string>;
+                if (list == null)
+                {
+                    list = new Stack<string>();
+                    domain.SetData(BinPathCollectionKey, list);
+                }
+
+                return list;
+            }
+        }
+
         [Required]
         public string BinPath { get; set; }
 
@@ -20,16 +45,18 @@ namespace Zealib.Build.Tasks
                 Log.LogError("BinPath directory \"{0}\" dose not exist.", BinPath);
                 return false;
             }
-            AppDomain.CurrentDomain.AssemblyResolve += ResolveAssembly;
+
+            BinPathCollection.Push(BinPath);
             return true;
         }
 
-        private Assembly ResolveAssembly(object sender, ResolveEventArgs e)
+        private static Assembly ResolveAssembly(object sender, ResolveEventArgs e)
         {
-            return (from file in Directory.EnumerateFiles(BinPath, "*.dll")
+            return (from binPath in BinPathCollection
+                    from file in Directory.EnumerateFiles(binPath, "*.dll")
                     let name = AssemblyName.GetAssemblyName(file)
                     where name.FullName == e.Name
-                    select Assembly.LoadFrom(file)).FirstOrDefault();
+                    select AppDomain.CurrentDomain.Load(name)).FirstOrDefault();
         }
     }
 }

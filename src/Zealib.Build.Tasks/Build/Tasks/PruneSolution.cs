@@ -1,4 +1,3 @@
-#define IN_CODE_DOM
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,7 +7,6 @@ using System.Text.RegularExpressions;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 
-// ReSharper disable InconsistentNaming
 namespace Zealib.Build.Tasks
 {
     public class PruneSolution : Task
@@ -101,8 +99,8 @@ namespace Zealib.Build
 
             if (!match.Success)
             {
-                Console.WriteLine(info);
-                throw new ArgumentException("Invalid project info.", "info");
+                throw new ArgumentException(
+                    string.Format("Invalid project info \"{0}\".", info), "info");
             }
             ProjectType = match.Result("${ProjectType}");
             ProjectName = match.Result("${ProjectName}");

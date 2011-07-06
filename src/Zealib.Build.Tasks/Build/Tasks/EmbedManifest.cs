@@ -13,7 +13,7 @@ namespace Zealib.Build.Tasks
         public string TargetFile { get; set; }
 
         [Required]
-        public string ManifestFile { get; private set; }
+        public string ManifestFile { get; set; }
 
         public override bool Execute()
         {

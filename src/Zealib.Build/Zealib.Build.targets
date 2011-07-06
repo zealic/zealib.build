@@ -11,7 +11,7 @@
   </PropertyGroup>
   
   <PropertyGroup>
-    <ZealibBuild-LibsPath Condition="'$(ZealibBuild-LibsPath)' == ''">$(ZealibBuildPath)\Libs\</ZealibBuild-LibsPath>
+    <ZealibBuild-LibsPath>$(ZealibBuildPath)\Libs\</ZealibBuild-LibsPath>
     <ZealibBuild-TasksAssembly Condition="'$(ZealibBuild-TasksAssembly)' != ''">$(ZealibBuildPath)\Zealib.Build.Tasks.dll</ZealibBuild-TasksAssembly>
   </PropertyGroup>
   

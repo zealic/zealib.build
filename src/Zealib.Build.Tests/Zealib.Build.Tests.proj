@@ -16,7 +16,6 @@
   </Target>
   
   <Target Name="Build" DependsOnTargets="Clean">
-     <MSBuild Projects="@(ProjectToBuild)" StopOnFirstFailure="True"
-        Properties="HostSpec=True"/>
+    <MSBuild BuildInParallel="True" Projects="@(ProjectToBuild)" StopOnFirstFailure="True" />
   </Target>
 </Project>

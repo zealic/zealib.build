@@ -1,4 +1,3 @@
-#define IN_CODE_DOM
 using System;
 using System.Collections.Generic;
 using System.IO;

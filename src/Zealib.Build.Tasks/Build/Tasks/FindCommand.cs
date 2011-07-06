@@ -1,4 +1,3 @@
-#define IN_CODE_DOM
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -36,18 +35,16 @@ namespace Zealib.Build.Tasks
             if (Paths == null)
             {
                 var pathVar = Environment.GetEnvironmentVariable("PATH");
-                if (string.IsNullOrEmpty(pathVar))
-                    Paths = new string[0];
-                else
-                    Paths = pathVar.Split(';');
+                Paths = string.IsNullOrEmpty(pathVar)
+                    ? new string[0]
+                    : pathVar.Split(';');
             }
             if (PathExtensions == null)
             {
                 var pathExtVar = Environment.GetEnvironmentVariable("PATHEXT");
-                if (string.IsNullOrEmpty(pathExtVar))
-                    PathExtensions = new string[0];
-                else
-                    PathExtensions = pathExtVar.Split(';');
+                PathExtensions = string.IsNullOrEmpty(pathExtVar)
+                    ? new string[0]
+                    : pathExtVar.Split(';');
             }
 
             var result = new LinkedList<ITaskItem>();

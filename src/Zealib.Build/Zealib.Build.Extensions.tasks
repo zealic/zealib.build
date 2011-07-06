@@ -9,7 +9,7 @@
     <MSBuildCommunityTasksPath>$(ZealibBuild-ExtensionsPath)\MSBuild.Community.Tasks\</MSBuildCommunityTasksPath>
     <ExtensionTasksPath>$(ZealibBuild-ExtensionsPath)\MSBuild.ExtensionPack\</ExtensionTasksPath>
     <T4TasksPath>$(MSBuildExtensionsPath)\Microsoft\VisualStudio\TextTemplating\v10.0\</T4TasksPath>
-    <T4TasksPath Condition="!Exists('T4TasksPath')">$(ZealibBuild-ExtensionsPath)\T4\</T4TasksPath>
+    <T4TasksPath Condition="!Exists($(T4TasksPath))">$(ZealibBuild-ExtensionsPath)\T4\</T4TasksPath>
   </PropertyGroup>
   
   <PropertyGroup>
