@@ -4,7 +4,7 @@ CALL :CHECK_ENV
 SET MSBUILD_TOOL=%WINDIR%\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe
 PUSHD "%~dp0"
    ECHO Starting all tests...
-  "%MSBUILD_TOOL%" /nologo "Zealib.Build.Tests.proj"
+  "%MSBUILD_TOOL%" /nologo /m /nr:false "Zealib.Build.Tests.proj"
 POPD
 ECHO.
 PAUSE

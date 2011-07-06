@@ -10,6 +10,7 @@
       Spec-PropertyFromEnvironmentVariable;
       Spec-PropertyFromReserved;
       Spec-PropertyFromRegistry;
+      Spec-PropertyFromRuntime;
     </SpecTargets>
   </PropertyGroup>
   
@@ -94,6 +95,12 @@ MSBuildProgramFiles32 = $(MSBuildProgramFiles32)" />
       Text="Spec-PropertyFromReserved FAILED" Code="2" />
     
     <Message Text="Spec-PropertyFromReserved PASS." />
+  </Target>
+  
+  <Target Name="Spec-PropertyFromRuntime">
+    <Error Condition="'$(MSBuildRuntimeVersion)' != '4.0.30319'" Code="2" />
+    
+    <Message Text="Spec-PropertyFromRuntime PASS." />
   </Target>
   
   <Target Name="Spec-PropertyFromRegistry">
