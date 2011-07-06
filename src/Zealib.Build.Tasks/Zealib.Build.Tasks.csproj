@@ -34,6 +34,7 @@
     <Reference Include="Microsoft.Build" />
     <Reference Include="Microsoft.Build.Framework" />
     <Reference Include="Microsoft.Build.Utilities.v4.0" />
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
@@ -43,6 +44,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Build\BuildEnvironment.cs" />
     <Compile Include="Build\Tasks\EmbedManifest.cs" />
     <Compile Include="Build\Tasks\GenerateMembersCode.cs" />
     <Compile Include="Build\Tasks\GetFileVersion.cs" />
