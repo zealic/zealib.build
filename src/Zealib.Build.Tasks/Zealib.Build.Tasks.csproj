@@ -38,10 +38,17 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="Vestris.ResourceLib">
+      <HintPath>..\Zealib.Build\Libs\Vestris.ResourceLib.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Build\Tasks\EmbedManifest.cs" />
     <Compile Include="Build\Tasks\GenerateMembersCode.cs" />
+    <Compile Include="Build\Tasks\GetFileVersion.cs" />
     <Compile Include="Build\Tasks\HookProject.cs" />
+    <Compile Include="Build\Tasks\RegisterAssemblyResolvePath.cs" />
+    <Compile Include="Build\Tasks\SetFileVersion.cs" />
     <Compile Include="IO\Base64Stream.cs" />
     <Compile Include="Build\Tasks\PruneSolution.cs" />
     <Compile Include="Build\Tasks\FindCommand.cs" />
@@ -56,7 +63,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\HookProject-After.props" />
-    <None Include="Resources\HookProject-Before.props" />
+    <None Include="Resources\HookProject-Before.props">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">

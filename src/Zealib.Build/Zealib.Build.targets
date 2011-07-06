@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003"
+    InitialTargets="_RegisterLibsPath"
+    DefaultTargets="Build">
   <PropertyGroup>
     <MSBuildTasks-Assembly Condition="'$(MSBuildTasks-Assembly)' == ''">$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll</MSBuildTasks-Assembly>
   </PropertyGroup>
@@ -8,7 +10,21 @@
     <ZealibBuildPath Condition="'$(ZealibBuildPath)' == ''">$(MSBuildExtensionsPath)\Zealib.Build</ZealibBuildPath>
   </PropertyGroup>
   
-  <Import Project="$(ZealibBuildPath)\Zealib.Build.tasks" />
+  <PropertyGroup>
+    <ZealibBuild-LibsPath Condition="'$(ZealibBuild-LibsPath)' == ''">$(ZealibBuildPath)\Libs\</ZealibBuild-LibsPath>
+    <ZealibBuild-TasksAssembly Condition="'$(ZealibBuild-TasksAssembly)' != ''">$(ZealibBuildPath)\Zealib.Build.Tasks.dll</ZealibBuild-TasksAssembly>
+  </PropertyGroup>
+  
+  <UsingTask TaskName="EmbedManifest" AssemblyFile="$(ZealibBuild-TasksAssembly)" />
+  <UsingTask TaskName="FindCommand" AssemblyFile="$(ZealibBuild-TasksAssembly)" />
+  <UsingTask TaskName="GenerateMembersCode" AssemblyFile="$(ZealibBuild-TasksAssembly)" />
+  <UsingTask TaskName="GetFileVersion" AssemblyFile="$(ZealibBuild-TasksAssembly)" />
+  <UsingTask TaskName="HookProject" AssemblyFile="$(ZealibBuild-TasksAssembly)" />
+  <UsingTask TaskName="ProcessFile" AssemblyFile="$(ZealibBuild-TasksAssembly)" />
+  <UsingTask TaskName="PruneSolution" AssemblyFile="$(ZealibBuild-TasksAssembly)" />
+  <UsingTask TaskName="RegisterAssemblyResolvePath" AssemblyFile="$(ZealibBuild-TasksAssembly)" />
+  <UsingTask TaskName="SetFileVersion" AssemblyFile="$(ZealibBuild-TasksAssembly)" />
+  
   <Import Project="$(ZealibBuildPath)\Zealib.Build.Extensions.tasks" />
   
   <PropertyGroup>
@@ -20,6 +36,10 @@
     <TargetDir>$(BaseDir)\target</TargetDir>
   </PropertyGroup>
   
+  <Target Name="_RegisterLibsPath">
+    <RegisterAssemblyResolvePath BinPath="$(ZealibBuild-LibsPath)" />
+  </Target>
+  
   <Target Name="BeforeBuild" />
   <Target Name="AfterBuild" />
   
@@ -27,6 +47,6 @@
   <Target Name="_AfterBuild" DependsOnTargets="AfterBuild" AfterTargets="Build" />
   
   <Target Name="Build">
-    <Error Code="10001" Text="You must redefine target 'Build'." />
+    <Error Code="ZB1001" Text="You must redefine target 'Build'." />
   </Target>
 </Project>

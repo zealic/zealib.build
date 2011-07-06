@@ -32,7 +32,8 @@
   <Target Name="GenerateSolution" DependsOnTargets="GenerateVersion">
     <MSBuild Projects="$(SolutionFile)" Properties="
       Configuration=Release;
-      OutputPath=$(Content-TargetDir);" />
+      OutputPath=$(Content-TargetDir);
+      UseCommonOutputDirectory=True" />
   </Target>
   
   <Target Name="GenerateVersion">
