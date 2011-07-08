@@ -21,7 +21,7 @@
   
   <PropertyGroup>
     <Timestamp>$([System.DateTime]::Now.ToString("yyyy-MM-dd HH:mm:ss zzz"))</Timestamp>
-    <BuildConstants>ENV_PRODUCTION</BuildConstants>
+    <BuildConstants>BUILD_TYPE_PRODUCTION</BuildConstants>
     <FullVersion>$(VersionMajor).$(VersionMinor).$(VersionBuild).$(VersionRevision)</FullVersion>
     <ArchiveFile>$(TargetDir)\$(ProjectName)-$(FullVersion).zip</ArchiveFile>
   </PropertyGroup>

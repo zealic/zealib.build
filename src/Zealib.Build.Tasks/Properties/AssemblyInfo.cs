@@ -2,10 +2,10 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-#if UNIT_TEST
-[assembly: AssemblyTitle(ThisAssembly.Title + ".Tests")]
-#else
+#if !UNIT_TEST
 [assembly: AssemblyTitle(ThisAssembly.Title)]
+#else
+[assembly: AssemblyTitle(ThisAssembly.Title + ".Tests")]
 #endif
 [assembly: AssemblyCompany(ThisAssembly.Company)]
 [assembly: AssemblyProduct(ThisAssembly.Product)]
@@ -32,14 +32,14 @@ partial class ThisAssembly
         VersionBuild + "." + VersionRevision;
     public const string FileVersion = Version;
 
-#if !ENV_PRODUCTION
+#if !BUILD_TYPE_PRODUCTION
     public const string VersionMajor = "0";
     public const string VersionMinor = "0";
     public const string VersionBuild = "0";
     public const string VersionRevision = "0";
     public const string VersionIdentity = "0000000000000000000000000000000000000000";
     public const string VersionType = "DEVELOPMENT";
-    public const string Timestamp = "2000-01-01 00:00:00 +08:00";
+    public const string Timestamp = "";
 #endif
 }
 #endif
