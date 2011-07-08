@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using Microsoft.Build.Evaluation;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
@@ -18,8 +17,10 @@ namespace Zealib.Build.Tasks
         [Output]
         public ITaskItem[] HookedProjects { get; private set; }
 
+        [Output]
         public string ProjectBeforeFile { get; set; }
 
+        [Output]
         public string ProjectAfterFile { get; set; }
 
         public string[] DefineConstants { get; set; }
@@ -27,29 +28,44 @@ namespace Zealib.Build.Tasks
         [Output]
         public string[] SourceFiles { get; set; }
 
-        [Output]
-        public string AttachCodeFile { get; set; }
-
-        public ITaskItem[] AttachClasses { get; set; }
-
-        private static string Escape(string str)
-        {
-            return ProjectCollection.Escape(str);
-        }
-
         public override bool Execute()
         {
             if (Projects == null) throw new ArgumentException("Projects can not be empty.");
+
+            if (InitializeHook() &&
+                InitializeDefineConstants() &&
+                InitializeSourceFiles())
+            {
+                var list = new List<ITaskItem>();
+                foreach (var project in Projects)
+                {
+                    ITaskItem result;
+                    if (!ProcessProject(project, out result))
+                        return false;
+                    list.Add(result);
+                }
+                HookedProjects = list.ToArray();
+                return true;
+            }
+            return false;
+        }
+
+        private bool InitializeHook()
+        {
+            var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             if (string.IsNullOrEmpty(ProjectBeforeFile))
             {
-                ProjectBeforeFile = Path.GetTempFileName();
+                if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+                ProjectBeforeFile = Path.Combine(dir, "ProjectBeforeFile.xml");
                 File.WriteAllText(ProjectBeforeFile, Resources.HookProject_Before);
             }
             if (string.IsNullOrEmpty(ProjectAfterFile))
             {
-                ProjectAfterFile = Path.GetTempFileName();
+                if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+                ProjectAfterFile = Path.Combine(dir, "ProjectAfterFile.xml");
                 File.WriteAllText(ProjectAfterFile, Resources.HookProject_After);
             }
+
             if (!File.Exists(ProjectBeforeFile))
             {
                 Log.LogError("ProjectBeforeFile \"{0}\" not exist.", ProjectBeforeFile);
@@ -60,33 +76,8 @@ namespace Zealib.Build.Tasks
                 Log.LogError("ProjectAfterFile \"{0}\" not exist.", ProjectAfterFile);
                 return false;
             }
-            if (AttachClasses == null) AttachClasses = new ITaskItem[0];
 
-
-            if (InitializeDefineConstants() &&
-                InitializeSourceFiles())
-            {
-                HookedProjects = Projects.Select(ProcessProject).ToArray();
-                return true;
-            }
-            return false;
-        }
-
-        private ITaskItem ProcessProject(ITaskItem project)
-        {
-            var item = new TaskItem(project);
-            project.CopyMetadataTo(item);
-            var sb = new StringBuilder();
-            var oldProperties = project.GetMetadata("Properties");
-            if (!string.IsNullOrEmpty(oldProperties))
-                sb.AppendFormat("{0};", oldProperties);
-            sb.AppendFormat("CustomBeforeMicrosoftCommonTargets={0}", Escape(ProjectBeforeFile));
-            sb.AppendFormat(";CustomAfterMicrosoftCommonTargets={0}", Escape(ProjectAfterFile));
-            sb.AppendFormat(";HookProject-DefineConstants={0}", Escape(string.Join(";", DefineConstants)));
-            sb.AppendFormat(";HookProject-SourceFiles={0}", Escape(string.Join(";", SourceFiles)));
-            item.SetMetadata("Properties", sb.ToString());
-
-            return item;
+            return true;
         }
 
         private bool InitializeDefineConstants()
@@ -110,6 +101,88 @@ namespace Zealib.Build.Tasks
                 Log.LogError("Source file \"{0}\" not exist.", file);
             }
             return !haveError;
+        }
+
+        private bool ProcessProject(ITaskItem project, out ITaskItem result)
+        {
+            result = new TaskItem(project);
+            project.CopyMetadataTo(project);
+            Dictionary<string, string> properties;
+            if (!ParseProperties(project.GetMetadata("Properties"), out properties))
+                return false;
+
+            string parentCustomBeforeTargets, parentCustomAfterTargets;
+            if (properties.TryGetValue("CustomBeforeMicrosoftCommonTargets", out parentCustomBeforeTargets))
+            {
+                properties["HookProject-Parent-CustomBeforeMicrosoftCommonTargets"] = Escape(parentCustomBeforeTargets);
+            }
+            if (properties.TryGetValue("HookProject-Parent-CustomAfterMicrosoftCommonTargets", out parentCustomAfterTargets))
+            {
+                properties["HookProject-Parent-CustomAfterMicrosoftCommonTargets"] = Escape(parentCustomAfterTargets);
+            }
+
+            properties["CustomBeforeMicrosoftCommonTargets"] = Escape(ProjectBeforeFile);
+            properties["CustomAfterMicrosoftCommonTargets"] = Escape(ProjectAfterFile);
+            properties["HookProject-DefineConstants"] = Escape(string.Join(";", DefineConstants));
+            properties["HookProject-SourceFiles"] = Escape(string.Join(";", SourceFiles));
+
+            result.SetMetadata("Properties", PropertiesToString(properties));
+            return true;
+        }
+
+        private bool ParseProperties(string properties, out Dictionary<string, string> result)
+        {
+            result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            if (string.IsNullOrEmpty(properties)) return true;
+
+            string lastName = null;
+            foreach (var str in properties.Split(';'))
+            {
+                var index = str.IndexOf("=");
+                if (index != -1)
+                {
+                    var name = str.Substring(0, index).Trim();
+                    var value = Escape(str.Substring(index + 1).Trim());
+                    if (name.Length == 0)
+                    {
+                        Log.LogError("Properties contain invalid property name.");
+                        return false;
+                    }
+
+                    if (result.ContainsKey(name))
+                        result[name] = value;
+                    else
+                        result.Add(name, value);
+
+                    lastName = name;
+                }
+                else if (lastName != null)
+                {
+                    result[lastName] = string.Concat(result[lastName], ";", Escape(str).Trim());
+                }
+                else
+                {
+                    Log.LogError("Properties contain invalid property name.");
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private static string PropertiesToString(Dictionary<string, string> properties)
+        {
+            var propertiesArray = properties
+                .Select(e => string.Concat(e.Key, "=", e.Value))
+                .ToList()
+                .ToArray();
+
+            return string.Join(";", propertiesArray);
+        }
+
+        private static string Escape(string str)
+        {
+            return ProjectCollection.Escape(str);
         }
     }
 }
