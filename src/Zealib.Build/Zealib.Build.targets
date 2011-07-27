@@ -12,7 +12,7 @@
   
   <PropertyGroup>
     <ZealibBuild-LibsPath>$(ZealibBuildPath)\Libs\</ZealibBuild-LibsPath>
-    <ZealibBuild-TasksAssembly Condition="'$(ZealibBuild-TasksAssembly)' != ''">$(ZealibBuildPath)\Zealib.Build.Tasks.dll</ZealibBuild-TasksAssembly>
+    <ZealibBuild-TasksAssembly Condition="'$(ZealibBuild-TasksAssembly)' == ''">$(ZealibBuildPath)\Zealib.Build.Tasks.dll</ZealibBuild-TasksAssembly>
   </PropertyGroup>
   
   <UsingTask TaskName="EmbedManifest" AssemblyFile="$(ZealibBuild-TasksAssembly)" />
