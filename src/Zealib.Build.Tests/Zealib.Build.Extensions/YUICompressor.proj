@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildProjectDirectory)\..\Test-Zealib.Build.props" />
+  
+  <PropertyGroup>
+    <SourceCssFile>$(Test-FixtureDir)\source.css</SourceCssFile>
+    <ResultCssFile>$(Test-ResultDir)\result.css</ResultCssFile>
+    <SourceJSFile>$(Test-FixtureDir)\source.js</SourceJSFile>
+    <ResultJSFile>$(Test-ResultDir)\result.js</ResultJSFile>
+  </PropertyGroup>
+  
+  <Target Name="Test">
+    <CompressorTask
+      CssCompressionType="YuiStockCompression"
+      CssFiles="$(SourceCssFile)"
+      CssOutputFile="$(ResultCssFile)"
+      DeleteCssFiles="false"
+      JavaScriptCompressionType="YuiStockCompression"
+      DeleteJavaScriptFiles="false"
+      ObfuscateJavaScript="True"
+      JavaScriptFiles="$(SourceJSFile)"
+      JavaScriptOutputFile="$(ResultJSFile)"
+      PreserveAllSemicolons="False"
+      DisableOptimizations="Nope"
+      EncodingType="Default"
+      LineBreakPosition="-1"
+      LoggingType="ALittleBit"
+      IsEvalIgnored="false" />
+
+    <File TaskAction="GetChecksum"
+      Path="$(SourceCssFile)">
+      <Output PropertyName="SourceCssChecksum" TaskParameter="Checksum" />
+    </File>
+    <File TaskAction="GetChecksum"
+      Path="$(ResultCssFile)">
+      <Output PropertyName="ResultCssChecksum" TaskParameter="Checksum" />
+    </File>
+    <Message Text="SourceCssChecksum=$(SourceCssChecksum), ResultCssChecksum=$(ResultCssChecksum)" />
+    <Error Condition="'$(SourceCssChecksum)' == '$(ResultCssChecksum)'" Code="1" />
+    
+    <File TaskAction="GetChecksum"
+      Path="$(SourceJSFile)">
+      <Output PropertyName="SourceJSChecksum" TaskParameter="Checksum" />
+    </File>
+    <File TaskAction="GetChecksum"
+      Path="$(ResultJSFile)">
+      <Output PropertyName="ResultJSChecksum" TaskParameter="Checksum" />
+    </File>
+    <Message Text="SourceCssChecksum=$(SourceJSChecksum), ResultCssChecksum=$(ResultJSChecksum)" />
+    <Error Condition="'$(SourceJSChecksum)' == '$(ResultJSChecksum)'" Code="1" />
+  </Target>
+</Project>
