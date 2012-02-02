@@ -29,7 +29,7 @@
   
   <PropertyGroup>
     <BuildDir>$(MSBuildProjectDirectory)</BuildDir>
-    <BuildToolsDir>$(BuildDir)\tools\</BuildToolsDir>
+    <BuildToolsDir>$(BuildDir)\Tools\</BuildToolsDir>
     <BaseDir>$([System.IO.Path]::GetFullPath($(MSBuildProjectDirectory)\..))</BaseDir>
     <SrcDir>$(BaseDir)\src</SrcDir>
     <DocDir>$(BaseDir)\doc</DocDir>
