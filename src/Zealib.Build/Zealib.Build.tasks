@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <UsingTask TaskName="EmbedManifest" AssemblyFile="$(ZealibBuild-TasksAssembly)" />
+  <UsingTask TaskName="FindCommand" AssemblyFile="$(ZealibBuild-TasksAssembly)" />
+  <UsingTask TaskName="GenerateMembersCode" AssemblyFile="$(ZealibBuild-TasksAssembly)" />
+  <UsingTask TaskName="GetFileVersion" AssemblyFile="$(ZealibBuild-TasksAssembly)" />
+  <UsingTask TaskName="HookProject" AssemblyFile="$(ZealibBuild-TasksAssembly)" />
+  <UsingTask TaskName="ProcessFile" AssemblyFile="$(ZealibBuild-TasksAssembly)" />
+  <UsingTask TaskName="PruneSolution" AssemblyFile="$(ZealibBuild-TasksAssembly)" />
+  <UsingTask TaskName="RegisterAssemblyResolvePath" AssemblyFile="$(ZealibBuild-TasksAssembly)" />
+  <UsingTask TaskName="SetFileVersion" AssemblyFile="$(ZealibBuild-TasksAssembly)" />
+  <UsingTask TaskName="SetWebProxy" AssemblyFile="$(ZealibBuild-TasksAssembly)" />
+</Project>

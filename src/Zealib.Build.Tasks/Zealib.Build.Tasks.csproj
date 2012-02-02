@@ -51,6 +51,7 @@
     <Compile Include="Build\Tasks\HookProject.cs" />
     <Compile Include="Build\Tasks\RegisterAssemblyResolvePath.cs" />
     <Compile Include="Build\Tasks\SetFileVersion.cs" />
+    <Compile Include="Build\Tasks\SetWebProxy.cs" />
     <Compile Include="IO\Base64Stream.cs" />
     <Compile Include="Build\Tasks\PruneSolution.cs" />
     <Compile Include="Build\Tasks\FindCommand.cs" />
@@ -65,6 +66,10 @@
     <Compile Include="Properties\ThisAssembly.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\Zealib.Build\Zealib.Build.tasks">
+      <Link>Zealib.Build.tasks</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Resources\HookProject-After.props" />
     <None Include="Resources\HookProject-Before.props">
       <SubType>Designer</SubType>

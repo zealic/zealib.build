@@ -15,16 +15,7 @@
     <ZealibBuild-TasksAssembly Condition="'$(ZealibBuild-TasksAssembly)' == ''">$(ZealibBuildPath)\Zealib.Build.Tasks.dll</ZealibBuild-TasksAssembly>
   </PropertyGroup>
   
-  <UsingTask TaskName="EmbedManifest" AssemblyFile="$(ZealibBuild-TasksAssembly)" />
-  <UsingTask TaskName="FindCommand" AssemblyFile="$(ZealibBuild-TasksAssembly)" />
-  <UsingTask TaskName="GenerateMembersCode" AssemblyFile="$(ZealibBuild-TasksAssembly)" />
-  <UsingTask TaskName="GetFileVersion" AssemblyFile="$(ZealibBuild-TasksAssembly)" />
-  <UsingTask TaskName="HookProject" AssemblyFile="$(ZealibBuild-TasksAssembly)" />
-  <UsingTask TaskName="ProcessFile" AssemblyFile="$(ZealibBuild-TasksAssembly)" />
-  <UsingTask TaskName="PruneSolution" AssemblyFile="$(ZealibBuild-TasksAssembly)" />
-  <UsingTask TaskName="RegisterAssemblyResolvePath" AssemblyFile="$(ZealibBuild-TasksAssembly)" />
-  <UsingTask TaskName="SetFileVersion" AssemblyFile="$(ZealibBuild-TasksAssembly)" />
-  
+  <Import Project="$(ZealibBuildPath)\Zealib.Build.tasks" />
   <Import Project="$(ZealibBuildPath)\Zealib.Build.Extensions.tasks" />
   
   <PropertyGroup>

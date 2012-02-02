@@ -6,6 +6,7 @@
   </PropertyGroup>
   
   <PropertyGroup>
+    <ClosureCompilerTasksPath>$(ZealibBuild-ExtensionsPath)\ClosureCompiler\</ClosureCompilerTasksPath>
     <MicrosoftAjaxTasksPath>$(ZealibBuild-ExtensionsPath)\MicrosoftAjax\</MicrosoftAjaxTasksPath>
     <MSBuildCommunityTasksPath>$(ZealibBuild-ExtensionsPath)\MSBuild.Community.Tasks\</MSBuildCommunityTasksPath>
     <ExtensionTasksPath>$(ZealibBuild-ExtensionsPath)\MSBuild.ExtensionPack\</ExtensionTasksPath>
@@ -18,6 +19,7 @@
     <T4-TargetsFile>$(T4TasksPath)\Microsoft.TextTemplating.targets</T4-TargetsFile>
   </PropertyGroup>
   
+  <Import Project="$(ClosureCompilerTasksPath)\ClosureCompiler.tasks" />
   <Import Project="$(MicrosoftAjaxTasksPath)\AjaxMin.tasks" />
   <Import Project="$(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.Targets" />
   <Import Project="$(ExtensionTasksPath)\MSBuild.ExtensionPack.tasks" />
