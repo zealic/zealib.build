@@ -7,8 +7,8 @@
   
   <ItemGroup>
     <ProjectToBuild Include="
-      $(MSBuildProjectDirectory)\MSBuild\*.proj;
-      $(MSBuildProjectDirectory)\Zealib.Build*\*.proj" />
+      $(MSBuildProjectDirectory)\MSBuild\*\*.proj;
+      $(MSBuildProjectDirectory)\Zealib.Build*\*\*.proj" />
   </ItemGroup>
   
   <Target Name="Clean">
@@ -16,6 +16,9 @@
   </Target>
   
   <Target Name="Build" DependsOnTargets="Clean">
-    <MSBuild BuildInParallel="True" Projects="@(ProjectToBuild)" StopOnFirstFailure="True" />
+    <MSBuild BuildInParallel="True" Projects="@(ProjectToBuild)" StopOnFirstFailure="True"
+      Properties="
+        Test-PropsFile=$(MSBuildProjectDirectory)\Test-Common.props;
+        ZealibBuild-PropsFile=$(MSBuildProjectDirectory)\Test-Zealib.Build.props" />
   </Target>
 </Project>

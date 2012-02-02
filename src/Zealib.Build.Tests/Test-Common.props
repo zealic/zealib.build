@@ -8,8 +8,8 @@
   
   <PropertyGroup>
     <TestName>$(MSBuildProjectName)</TestName>
-    <Test-BaseDir>$(MSBuildThisFileDirectory)</Test-BaseDir>
-    <Test-FixtureDir>$(MSBuildProjectDirectory)\$(TestName)\</Test-FixtureDir>
+    <Test-BaseDir>$(MSBuildThisFileDirectory)\</Test-BaseDir>
+    <Test-FixtureDir>$(MSBuildProjectDirectory)\</Test-FixtureDir>
     <Test-TargetDir>$(Test-BaseDir)\target\</Test-TargetDir>
     <Test-ResultDir>$(Test-TargetDir)\$([System.IO.Directory]::GetParent($(MSBuildProjectFullPath)).Name)\$(TestName)\</Test-ResultDir>
     <Test-SrcDir>$(Test-FixtureDir)\src</Test-SrcDir>

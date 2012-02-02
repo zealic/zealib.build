@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(ZealibBuild-PropsFile)" />
+  
+  <PropertyGroup>
+    <FactAssembly>$(Test-BinDir)\FactAssembly.dll</FactAssembly>
+  </PropertyGroup>
+  <ItemGroup>
+    <FactSources Include="$(Test-SrcDir)\*.cs" />
+  </ItemGroup>
+  
+  <Target Name="MakeAssembly">
+    <Csc Sources="@(FactSources)" TargetType="Library" OutputAssembly="$(FactAssembly)" />
+  </Target>
+  
+  <Target Name="Test" DependsOnTargets="MakeAssembly">
+    <RegisterAssemblyResolvePath BinPath="$(Test-BinDir)" />
+    <SayHello />
+  </Target>
+  
+  <UsingTask
+      TaskName="SayHello"
+      TaskFactory="CodeTaskFactory"
+      AssemblyFile="$(MSBuildTasks-Assembly)" >
+    <Task>
+      <Reference Include="$(FactAssembly)" />
+      <Using Namespace="System" />
+      <Code Type="Method" Language="cs">
+      <![CDATA[
+public override bool Execute() {
+  HelloWorld.Say();
+  return true;
+}]]>
+      </Code>
+    </Task>
+  </UsingTask>
+</Project>
