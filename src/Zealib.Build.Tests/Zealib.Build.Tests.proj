@@ -7,7 +7,6 @@
   
   <ItemGroup>
     <ProjectToBuild Include="
-      $(MSBuildProjectDirectory)\MSBuild\*\*.proj;
       $(MSBuildProjectDirectory)\Zealib.Build*\*\*.proj" />
   </ItemGroup>
   
